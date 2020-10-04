@@ -25,6 +25,7 @@ public class Service { //методы для обработки данных
         initializationPlayers(fool, amountOfPlayers);
         List<Card> cards = initializationCards(fool, amountOfCards);
         shuffleCards(cards);
+        chooseTrump(cards);
     }
 
     private List<Card> initializationCards(Fool fool, int amount) {
@@ -49,10 +50,6 @@ public class Service { //методы для обработки данных
             System.out.println(ANSI_PURPLE + "Такое кол-во карт недопустимо!!!" + ANSI_RESET);
         }
 
-        for (Card card : cards) {
-            //System.out.println(card);
-        }
-
         return cards;
     }
 
@@ -61,10 +58,6 @@ public class Service { //методы для обработки данных
 
         for (int i = 1; i <= amount; i++) {
             players.add(new Player(i));
-        }
-
-        for (Player player : players) {
-            //System.out.println(player);
         }
     }
 
@@ -94,14 +87,43 @@ public class Service { //методы для обработки данных
         System.out.println();
 
         for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
-            System.out.println(ANSI_RESET + ANSI_GREEN + playerSetEntry.getKey() + ANSI_BLACK +" -> ");
+            System.out.println(ANSI_RESET + ANSI_GREEN + playerSetEntry.getKey() + ANSI_BLACK + " -> ");
             for (Card card : playerSetEntry.getValue()) {
                 System.out.println(card);
             }
         }
     }
 
-    void doStep(){
+
+    void chooseTrump(List<Card> cards) {
+        System.out.println();
+        int randomNumber = (int) (Math.random() * cards.size());
+        Card trump = cards.get(randomNumber);
+        System.out.println(ANSI_RESET + "Trump -> " + ANSI_RED + trump);
+        cards.remove(randomNumber);
+        cards.add(cards.size(), trump);
+
+        for (Card card : cards) {
+            System.out.println(card);
+        }
+    }
+
+    void attack(Player player, Set<Card> cards, char trump) {
+        for (Card card : cards) {
+
+        }
+    }
+
+    void beatOff() {
 
     }
+
+    void tossUp(){
+
+    }
+
+    void giveCards() {
+
+    }
+
 }
