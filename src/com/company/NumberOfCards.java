@@ -15,7 +15,7 @@ public enum NumberOfCards {
     KING("K"),
     ACE("A");
 
-    private String number;
+    private final String number;
 
     NumberOfCards(String number) {
         this.number = number;
