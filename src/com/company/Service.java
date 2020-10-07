@@ -19,8 +19,8 @@ public class Service {
     public void start(Fool fool, int amountOfPlayers, int amountOfCards) {
         initialization(fool, amountOfPlayers, amountOfCards);
         distributeCards(fool);
-
-        giveCards(fool);
+        playTillTheEnd(fool, amountOfPlayers);
+        //giveCards(fool);
     }
 
     public void initialization(Fool fool, int amountOfPlayers, int amountOfCards) { //создание всего
@@ -59,8 +59,9 @@ public class Service {
         for (int i = 1; i <= amount; i++) {
             players.add(new Player(i));
         }
+
         System.out.println("Инициализация игроков");
-        for(Player player : players){
+        for (Player player : players) {
             System.out.println(player);
         }
 
@@ -103,7 +104,7 @@ public class Service {
 
         System.out.println();
         int i = 0;
-        for(Card card : cards){
+        for (Card card : cards) {
             System.out.println(card);
             i++;
         }
@@ -121,7 +122,25 @@ public class Service {
         }
     }
 
-    void attack(Player targetPlayer, Fool context) {
+    void playTillTheEnd(Fool fool, int amountOfPlayers) {
+        ArrayDeque<Player> players = fool.getPlayers();
+        int i = 0;
+        while (players.size() != 0) {
+
+            for(Player player : players){
+
+            }
+
+            if (i == amountOfPlayers) {
+                i = 0;
+            } else {
+                i++;
+            }
+
+        }
+    }
+
+    void attack(Fool context, Player targetPlayer) { // кого атакуют
 
     }
 
@@ -159,7 +178,7 @@ public class Service {
 
         System.out.println();
         int i = 0;
-        for(Card card : cards){
+        for (Card card : cards) {
             System.out.println(card);
             i++;
         }
