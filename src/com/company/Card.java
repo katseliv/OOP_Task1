@@ -3,10 +3,12 @@ package com.company;
 public class Card {
     private String id;
     private char type;
+    private final int compareNumber;
 
-    public Card(String id, char type) {
+    public Card(String id, char type, int compareNumber) {
         this.id = id;
         this.type = type;
+        this.compareNumber = compareNumber;
     }
 
     public String getId() {
@@ -23,6 +25,10 @@ public class Card {
 
     public void setType(char type) {
         this.type = type;
+    }
+
+    public int getCompareNumber() {
+        return compareNumber;
     }
 
     @Override

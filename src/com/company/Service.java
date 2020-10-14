@@ -19,8 +19,7 @@ public class Service {
     public void start(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
         initialization(gameFool, amountOfPlayers, amountOfCards);
         distributeCards(gameFool);
-        //playTillTheEnd(gameFool, amountOfPlayers);
-        //giveCards(fool);
+        playTillTheEnd(gameFool, amountOfPlayers);
     }
 
     public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) { //создание всего
@@ -35,18 +34,19 @@ public class Service {
         List<Card> cards = gameFool.getCards();
         String[] numberOfCards = NumberOfCards.NUMBER_OF_CARDS;
         char[] cardSuit = CardSuit.CARD_SUIT;
-
+        int i = 0;
         if (amount == 36) {
-            for (int i = 4; i < numberOfCards.length; i++) {
+            for (i = 4; i < numberOfCards.length; i++) {
                 for (char suit : cardSuit) {
-                    cards.add(new Card(numberOfCards[i], suit));
+                    cards.add(new Card(numberOfCards[i], suit, i));
                 }
             }
         } else if (amount == 52) {
             for (String numberOfCard : numberOfCards) {
                 for (char suit : cardSuit) {
-                    cards.add(new Card(numberOfCard, suit));
+                    cards.add(new Card(numberOfCard, suit, i));
                 }
+                i++;
             }
         } else {
             System.out.println(ANSI_PURPLE + "Такое кол-во карт недопустимо!!!" + ANSI_RESET);
@@ -128,8 +128,8 @@ public class Service {
         int i = 0;
         while (players.getCount() != 0) {
 
-            for(Player player : players){
-
+            for (Player player : players) {
+                System.out.println(player);
             }
 
             if (i == amountOfPlayers) {
@@ -137,21 +137,66 @@ public class Service {
             } else {
                 i++;
             }
-
+            break;
         }
     }
 
-    void attack(GameFool context, Player targetPlayer) { // кого атакуют
+    Card attack(GameFool context, Player attackPlayer, Card trump) {
+        Map<Player, Set<Card>> ratio = context.getRatio();
+        int minNoTrump = Integer.MAX_VALUE;
+        int minTrump = Integer.MAX_VALUE;
+        Card cardNoTrump = null, cardTrump = null;
 
+        for (Card card : ratio.get(attackPlayer)) {
+            if (card.getCompareNumber() < minNoTrump && !isTrump(card, trump)) {
+                minNoTrump = card.getCompareNumber();
+                cardNoTrump = card;
+            } else if (card.getCompareNumber() < minTrump) {
+                minTrump = card.getCompareNumber();
+                cardTrump = card;
+            }
+        }
+
+        if (cardNoTrump == null) {
+            return cardTrump;
+        }
+        return cardNoTrump;
     }
 
-    void beatOff() {
-
+    boolean isTrump(Card card, Card trump) {
+        return card.getType() == trump.getType();
     }
 
-    void tossUp() {
+    Card beatOff(List<Card> remainingCards, Card attackCard) {
+        int min = Integer.MAX_VALUE;
+        Card minCard = null;
 
-    }
+        for (Card card : remainingCards) {
+            if (card.getType() == attackCard.getType() && card.getCompareNumber() > attackCard.getCompareNumber() && card.getCompareNumber() < min) {
+                min = card.getCompareNumber();
+                minCard = card;
+            }
+        }
+
+        return minCard;
+    }  //temporary
+
+    List<Card> tossUp(List<Card> cardsOnTheTable, List<Card> cardsOfPlayer) {
+        List<Card> cardsForTossUp = new ArrayList<>();
+        List<Card> cardsForRemoving = new ArrayList<>();
+
+        for (Card cardOnTheTable : cardsOnTheTable){
+            for (Card cardForTossUp : cardsOfPlayer) {
+                if (cardOnTheTable.getId().equals(cardForTossUp.getId())) {
+                    cardsForTossUp.add(cardForTossUp);
+                    cardsForRemoving.add(cardForTossUp);
+                }
+            }
+            cardsOfPlayer.removeAll(cardsForRemoving);
+        }
+
+        return cardsForTossUp;
+    } //temporary
 
     void giveCards(GameFool gameFool) {
         System.out.println();
@@ -184,6 +229,5 @@ public class Service {
             i++;
         }
         System.out.println("Кол-во карт " + i);
-    }
-
+    } //fulfilled
 }
