@@ -16,23 +16,23 @@ public class Service {
     public Service() {
     }
 
-    public void start(Fool fool, int amountOfPlayers, int amountOfCards) {
-        initialization(fool, amountOfPlayers, amountOfCards);
-        distributeCards(fool);
-        playTillTheEnd(fool, amountOfPlayers);
+    public void start(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
+        initialization(gameFool, amountOfPlayers, amountOfCards);
+        distributeCards(gameFool);
+        //playTillTheEnd(gameFool, amountOfPlayers);
         //giveCards(fool);
     }
 
-    public void initialization(Fool fool, int amountOfPlayers, int amountOfCards) { //создание всего
-        initializationPlayers(fool, amountOfPlayers);
-        List<Card> cards = initializationCards(fool, amountOfCards);
+    public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) { //создание всего
+        initializationPlayers(gameFool, amountOfPlayers);
+        List<Card> cards = initializationCards(gameFool, amountOfCards);
         shuffleCards(cards);
         chooseTrump(cards);
 
     }
 
-    private List<Card> initializationCards(Fool fool, int amount) {
-        List<Card> cards = fool.getCards();
+    private List<Card> initializationCards(GameFool gameFool, int amount) {
+        List<Card> cards = gameFool.getCards();
         String[] numberOfCards = NumberOfCards.NUMBER_OF_CARDS;
         char[] cardSuit = CardSuit.CARD_SUIT;
 
@@ -54,8 +54,8 @@ public class Service {
         return cards;
     }
 
-    private void initializationPlayers(Fool fool, int amount) {
-        ArrayDeque<Player> players = fool.getPlayers();
+    private void initializationPlayers(GameFool gameFool, int amount) {
+        CyclicList<Player> players = gameFool.getPlayers();
         for (int i = 1; i <= amount; i++) {
             players.add(new Player(i));
         }
@@ -79,22 +79,23 @@ public class Service {
         System.out.println("Кол-во карт " + i);
     }
 
-    void distributeCards(Fool fool) {
-        Map<Player, Set<Card>> ratio = fool.getRatio();
-        ArrayDeque<Player> players = fool.getPlayers();
-        List<Card> cards = fool.getCards();
+    void distributeCards(GameFool gameFool) {
+        Map<Player, Set<Card>> ratio = gameFool.getRatio();
+        CyclicList<Player> players = gameFool.getPlayers();
+        List<Card> cards = gameFool.getCards();
+        List<Card> toRemove = new ArrayList<>();
 
         for (Player player : players) {
             Set<Card> cardsOfPlayer = new HashSet<>();
             for (int i = 0; i < 3; i++) { // 6 must be
-                cardsOfPlayer.add(cards.get(0));
-                cards.remove(0);
+                cardsOfPlayer.add(cards.get(i));
+                toRemove.add(cards.get(i));
             }
+            cards.removeAll(toRemove);
             ratio.put(player, cardsOfPlayer);
         }
 
         System.out.println();
-
         for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
             System.out.println(ANSI_RESET + ANSI_GREEN + playerSetEntry.getKey() + ANSI_BLACK + " -> ");
             for (Card card : playerSetEntry.getValue()) {
@@ -122,10 +123,10 @@ public class Service {
         }
     }
 
-    void playTillTheEnd(Fool fool, int amountOfPlayers) {
-        ArrayDeque<Player> players = fool.getPlayers();
+    void playTillTheEnd(GameFool gameFool, int amountOfPlayers) {
+        CyclicList<Player> players = gameFool.getPlayers();
         int i = 0;
-        while (players.size() != 0) {
+        while (players.getCount() != 0) {
 
             for(Player player : players){
 
@@ -140,7 +141,7 @@ public class Service {
         }
     }
 
-    void attack(Fool context, Player targetPlayer) { // кого атакуют
+    void attack(GameFool context, Player targetPlayer) { // кого атакуют
 
     }
 
@@ -152,11 +153,11 @@ public class Service {
 
     }
 
-    void giveCards(Fool fool) {
+    void giveCards(GameFool gameFool) {
         System.out.println();
         System.out.println("Добавили карты: ");
-        Map<Player, Set<Card>> ratio = fool.getRatio();
-        List<Card> cards = fool.getCards();
+        Map<Player, Set<Card>> ratio = gameFool.getRatio();
+        List<Card> cards = gameFool.getCards();
 
         for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
             int size = 6 - playerSetEntry.getValue().size();

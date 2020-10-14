@@ -2,19 +2,20 @@ package com.company;
 
 import java.util.*;
 
-public class Fool {
-    private ArrayDeque<Player> players = new ArrayDeque<>();
+public class GameFool {
+    //private ArrayDeque<Player> players = new ArrayDeque<>();
+    private CyclicList<Player> players = new CyclicList<>();
     private List<Card> cards = new ArrayList<>();
     private List<Step> steps = new ArrayList<>();
     private Map<Player, Set<Card>> ratio = new HashMap<>();
 
-    public Fool() {}
+    public GameFool() {}
 
-    public ArrayDeque<Player> getPlayers() {
+    public CyclicList<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(ArrayDeque<Player> players) {
+    public void setPlayers(CyclicList<Player> players) {
         this.players = players;
     }
 
