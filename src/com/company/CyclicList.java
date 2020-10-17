@@ -40,11 +40,6 @@ public class CyclicList<T> implements Iterable<T> {
         count++;
     }
 
-//    public T get(){
-//
-//        return null;
-//    }
-
     public T get() throws Exception {
         if (head == null) {
             throw new Exception("Queue is empty!");
@@ -82,4 +77,5 @@ public class CyclicList<T> implements Iterable<T> {
             }
         };
     }
+
 }

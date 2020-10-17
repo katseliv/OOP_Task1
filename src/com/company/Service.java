@@ -4,9 +4,6 @@ import java.util.*;
 
 public class Service {
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
     public Service() {
     }
@@ -30,23 +27,27 @@ public class Service {
         List<Card> cards = gameFool.getCards();
         String[] numberOfCards = NumberOfCards.NUMBER_OF_CARDS;
         char[] cardSuit = CardSuit.CARD_SUIT;
-        int i = 0;
+
+        int compareNumber = 0;
+
         if (amount == 36) {
-            for (i = 4; i < numberOfCards.length; i++) {
+            for (int i = 4; i < numberOfCards.length; i++) {
                 for (char suit : cardSuit) {
-                    cards.add(new Card(numberOfCards[i], suit, i));
+                    cards.add(new Card(numberOfCards[i], suit, compareNumber));
                 }
+                compareNumber++;
             }
         } else if (amount == 52) {
             for (String numberOfCard : numberOfCards) {
                 for (char suit : cardSuit) {
-                    cards.add(new Card(numberOfCard, suit, i));
+                    cards.add(new Card(numberOfCard, suit, compareNumber));
                 }
-                i++;
+                compareNumber++;
             }
         } else {
             System.out.println(ANSI_PURPLE + "Такое кол-во карт недопустимо!!!" + ANSI_RESET);
         }
+
         return cards;
     }
 
@@ -127,19 +128,9 @@ public class Service {
     void playTillTheEnd(GameFool gameFool, int amountOfPlayers) {
         CyclicList<Player> players = gameFool.getPlayers();
         int i = 0;
-        while (players.getCount() != 0) {
-
-            for (Player player : players) {
-                System.out.println(player);
-            }
-
-            if (i == amountOfPlayers) {
-                i = 0;
-            } else {
-                i++;
-            }
-            break;
-        }
+//        while (players.getCount() != 0) {
+//
+//        }
     }
 
     Card attack(GameFool context, Player attackPlayer, Card trump) {
@@ -161,6 +152,7 @@ public class Service {
         if (cardNoTrump == null) {
             return cardTrump;
         }
+
         return cardNoTrump;
     } //temporary
 
