@@ -4,12 +4,7 @@ import java.util.*;
 
 public class Service {
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
@@ -19,7 +14,7 @@ public class Service {
     public void start(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
         initialization(gameFool, amountOfPlayers, amountOfCards);
         distributeCards(gameFool);
-        playTillTheEnd(gameFool, amountOfPlayers);
+        //playTillTheEnd(gameFool, amountOfPlayers);
     }
 
     public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) { //создание всего
@@ -31,6 +26,7 @@ public class Service {
     }
 
     private List<Card> initializationCards(GameFool gameFool, int amount) {
+        String ANSI_PURPLE = "\u001B[35m";
         List<Card> cards = gameFool.getCards();
         String[] numberOfCards = NumberOfCards.NUMBER_OF_CARDS;
         char[] cardSuit = CardSuit.CARD_SUIT;
@@ -68,6 +64,8 @@ public class Service {
     }
 
     private void shuffleCards(List<Card> cards) {
+        String ANSI_BLACK = "\u001B[30m";
+        String ANSI_BLUE = "\u001B[34m";
         System.out.println(ANSI_RESET + ANSI_BLUE + "Генерация колоды:" + ANSI_BLACK);
         Collections.shuffle(cards);
 
@@ -80,6 +78,8 @@ public class Service {
     }
 
     void distributeCards(GameFool gameFool) {
+        String ANSI_BLACK = "\u001B[30m";
+        String ANSI_GREEN = "\u001B[32m";
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cards = gameFool.getCards();
@@ -113,6 +113,7 @@ public class Service {
     }
 
     void chooseTrump(List<Card> cards) {
+        String ANSI_RED = "\u001B[31m";
         System.out.println();
         int number = cards.size() - 1;
         Card trump = cards.get(number);
@@ -161,7 +162,7 @@ public class Service {
             return cardTrump;
         }
         return cardNoTrump;
-    }
+    } //temporary
 
     boolean isTrump(Card card, Card trump) {
         return card.getType() == trump.getType();
@@ -199,6 +200,8 @@ public class Service {
     } //temporary
 
     void giveCards(GameFool gameFool) {
+        String ANSI_GREEN = "\u001B[32m";
+        String ANSI_BLACK = "\u001B[30m";
         System.out.println();
         System.out.println("Добавили карты: ");
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
