@@ -1,38 +1,39 @@
 package com.company;
 
 public class Card {
-    private String id;
-    private char type;
-    private final int compareNumber;
+    private RankOfCards rank;
+    private CardSuit suit;
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_BLACK = "\u001B[30m";
 
-    public Card(String id, char type, int compareNumber) {
-        this.id = id;
-        this.type = type;
-        this.compareNumber = compareNumber;
+    public Card(RankOfCards id, CardSuit suit) {
+        this.rank = id;
+        this.suit = suit;
     }
 
-    public String getId() {
-        return id;
+    public RankOfCards getRank() {
+        return rank;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setRank(RankOfCards rank) {
+        this.rank = rank;
     }
 
-    public char getType() {
-        return type;
+    public CardSuit getSuit() {
+        return suit;
     }
 
-    public void setType(char type) {
-        this.type = type;
-    }
-
-    public int getCompareNumber() {
-        return compareNumber;
+    public void setSuit(CardSuit suit) {
+        this.suit = suit;
     }
 
     @Override
     public String toString() {
-        return "Id = " + id + " Type = " + type;
+        String color = ANSI_BLACK;
+        if(suit == CardSuit.HEARTS || suit == CardSuit.DIAMONDS){
+            color = ANSI_RED;
+        }
+        return  "\n" + ANSI_BLACK + "Rank = " + color + rank.getRank() + ANSI_BLACK +" Suit = " + color + suit.getSign() + ANSI_BLACK;
     }
 }

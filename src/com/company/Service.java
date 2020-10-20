@@ -3,52 +3,20 @@ package com.company;
 import java.util.*;
 
 public class Service {
-    public static final String ANSI_RESET = "\u001B[0m";
-
-    public Service() {
-    }
 
     public void start(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
         initialization(gameFool, amountOfPlayers, amountOfCards);
         distributeCards(gameFool);
+        chooseTrump(gameFool);
         //playTillTheEnd(gameFool, amountOfPlayers);
+        giveCards(gameFool);
     }
 
-    public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) { //создание всего
+    public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
+        System.out.print("\u001B[30m" + "Start our game !!!");
         initializationPlayers(gameFool, amountOfPlayers);
         List<Card> cards = initializationCards(gameFool, amountOfCards);
         shuffleCards(cards);
-        chooseTrump(cards);
-
-    }
-
-    private List<Card> initializationCards(GameFool gameFool, int amount) {
-        String ANSI_PURPLE = "\u001B[35m";
-        List<Card> cards = gameFool.getCards();
-        String[] numberOfCards = NumberOfCards.NUMBER_OF_CARDS;
-        char[] cardSuit = CardSuit.CARD_SUIT;
-
-        int compareNumber = 0;
-
-        if (amount == 36) {
-            for (int i = 4; i < numberOfCards.length; i++) {
-                for (char suit : cardSuit) {
-                    cards.add(new Card(numberOfCards[i], suit, compareNumber));
-                }
-                compareNumber++;
-            }
-        } else if (amount == 52) {
-            for (String numberOfCard : numberOfCards) {
-                for (char suit : cardSuit) {
-                    cards.add(new Card(numberOfCard, suit, compareNumber));
-                }
-                compareNumber++;
-            }
-        } else {
-            System.out.println(ANSI_PURPLE + "Такое кол-во карт недопустимо!!!" + ANSI_RESET);
-        }
-
-        return cards;
     }
 
     private void initializationPlayers(GameFool gameFool, int amount) {
@@ -57,30 +25,39 @@ public class Service {
             players.add(new Player(i));
         }
 
-        System.out.println("Инициализация игроков");
         for (Player player : players) {
-            System.out.println(player);
+            System.out.print(player);
+        }
+    }
+
+    private List<Card> initializationCards(GameFool gameFool, int amountOfCards) {
+        List<Card> cards = gameFool.getCards();
+        RankOfCards[] rankOfCards = new RankOfCards[0];
+        CardSuit[] cardSuit = CardSuit.CARD_SUIT;
+
+        if (amountOfCards == 36) {
+            rankOfCards = RankOfCards.SMALL_DECK;
+        } else if (amountOfCards == 52) {
+            rankOfCards = RankOfCards.BIG_DECK;
         }
 
+        for (RankOfCards numberOfCard : rankOfCards) {
+            for (CardSuit suit : cardSuit) {
+                cards.add(new Card(numberOfCard, suit));
+            }
+        }
+
+        System.out.println(gameFool);
+        return cards;
     }
 
     private void shuffleCards(List<Card> cards) {
-        String ANSI_BLACK = "\u001B[30m";
-        String ANSI_BLUE = "\u001B[34m";
-        System.out.println(ANSI_RESET + ANSI_BLUE + "Генерация колоды:" + ANSI_BLACK);
         Collections.shuffle(cards);
-
-        int i = 0;
-        for (Card card : cards) {
-            System.out.println(card);
-            i++;
-        }
-        System.out.println("Кол-во карт " + i);
+        System.out.println();
+        System.out.println("\u001B[34m" + "Shuffle cards: " + "\u001B[30m" + cards + "\nlength = " + cards.size());
     }
 
-    void distributeCards(GameFool gameFool) {
-        String ANSI_BLACK = "\u001B[30m";
-        String ANSI_GREEN = "\u001B[32m";
+    private void distributeCards(GameFool gameFool) {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cards = gameFool.getCards();
@@ -88,7 +65,7 @@ public class Service {
 
         for (Player player : players) {
             Set<Card> cardsOfPlayer = new HashSet<>();
-            for (int i = 0; i < 3; i++) { // 6 must be
+            for (int i = 0; i < gameFool.NUMBER_OF_PLAYERS; i++) {
                 cardsOfPlayer.add(cards.get(i));
                 toRemove.add(cards.get(i));
             }
@@ -97,41 +74,28 @@ public class Service {
         }
 
         System.out.println();
-        for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
-            System.out.println(ANSI_RESET + ANSI_GREEN + playerSetEntry.getKey() + ANSI_BLACK + " -> ");
-            for (Card card : playerSetEntry.getValue()) {
-                System.out.println(card);
-            }
-        }
-
-        System.out.println();
-        int i = 0;
-        for (Card card : cards) {
-            System.out.println(card);
-            i++;
-        }
-        System.out.println("Кол-во карт " + i);
+        System.out.println("Распределение карт: " + gameFool);
     }
 
-    void chooseTrump(List<Card> cards) {
-        String ANSI_RED = "\u001B[31m";
-        System.out.println();
-        int number = cards.size() - 1;
-        Card trump = cards.get(number);
-        System.out.println(ANSI_RESET + "Trump -> " + ANSI_RED + trump);
-        System.out.println();
-        for (Card card : cards) {
-            System.out.println(card);
-        }
+    private void chooseTrump(GameFool gameFool) {
+        List<Card> cards = gameFool.getCards();
+        int firstIndex = 0;
+        gameFool.setTrump(cards.get(firstIndex));
+        cards.remove(firstIndex);
+        cards.add(cards.size(), gameFool.getTrump());
+        System.out.println("\nTrump = " + gameFool.getTrump());
+        System.out.print(gameFool);
     }
 
     void playTillTheEnd(GameFool gameFool, int amountOfPlayers) {
         CyclicList<Player> players = gameFool.getPlayers();
+
         int i = 0;
 //        while (players.getCount() != 0) {
 //
+//
 //        }
-    }
+    } //final method
 
     Card attack(GameFool context, Player attackPlayer, Card trump) {
         Map<Player, Set<Card>> ratio = context.getRatio();
@@ -140,11 +104,11 @@ public class Service {
         Card cardNoTrump = null, cardTrump = null;
 
         for (Card card : ratio.get(attackPlayer)) {
-            if (card.getCompareNumber() < minNoTrump && !isTrump(card, trump)) {
-                minNoTrump = card.getCompareNumber();
+            if (card.getRank().getCompareNumber() < minNoTrump && !isTrump(card, trump)) {
+                minNoTrump = card.getRank().getCompareNumber();
                 cardNoTrump = card;
-            } else if (card.getCompareNumber() < minTrump) {
-                minTrump = card.getCompareNumber();
+            } else if (card.getRank().getCompareNumber() < minTrump) {
+                minTrump = card.getRank().getCompareNumber();
                 cardTrump = card;
             }
         }
@@ -157,16 +121,16 @@ public class Service {
     } //temporary
 
     boolean isTrump(Card card, Card trump) {
-        return card.getType() == trump.getType();
+        return card.getSuit() == trump.getSuit();
     }
 
-    Card beatOff(List<Card> remainingCards, Card attackCard) {
+    Card beatOff(Card attackCard, List<Card> remainingCards) {
         int min = Integer.MAX_VALUE;
         Card minCard = null;
 
         for (Card card : remainingCards) {
-            if (card.getType() == attackCard.getType() && card.getCompareNumber() > attackCard.getCompareNumber() && card.getCompareNumber() < min) {
-                min = card.getCompareNumber();
+            if (card.getSuit() == attackCard.getSuit() && card.getRank().getCompareNumber() > attackCard.getRank().getCompareNumber() && card.getRank().getCompareNumber() < min) {
+                min = card.getRank().getCompareNumber();
                 minCard = card;
             }
         }
@@ -178,9 +142,9 @@ public class Service {
         List<Card> cardsForTossUp = new ArrayList<>();
         List<Card> cardsForRemoving = new ArrayList<>();
 
-        for (Card cardOnTheTable : cardsOnTheTable){
+        for (Card cardOnTheTable : cardsOnTheTable) {
             for (Card cardForTossUp : cardsOfPlayer) {
-                if (cardOnTheTable.getId().equals(cardForTossUp.getId())) {
+                if (cardOnTheTable.getRank().equals(cardForTossUp.getRank())) {
                     cardsForTossUp.add(cardForTossUp);
                     cardsForRemoving.add(cardForTossUp);
                 }
@@ -192,37 +156,19 @@ public class Service {
     } //temporary
 
     void giveCards(GameFool gameFool) {
-        String ANSI_GREEN = "\u001B[32m";
-        String ANSI_BLACK = "\u001B[30m";
-        System.out.println();
-        System.out.println("Добавили карты: ");
+        System.out.print("\u001B[34m" + "\nGive cards:" + "\u001B[30m");
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         List<Card> cards = gameFool.getCards();
 
         for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
-            int size = 6 - playerSetEntry.getValue().size();
+            int size = gameFool.NUMBER_OF_CARDS - playerSetEntry.getValue().size();
             if (size > 0) {
-
                 for (int i = 0; i < size; i++) {
                     playerSetEntry.getValue().add(cards.get(0));
                     cards.remove(0);
                 }
             }
         }
-
-        for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
-            System.out.println(ANSI_RESET + ANSI_GREEN + playerSetEntry.getKey() + ANSI_BLACK + " -> ");
-            for (Card card : playerSetEntry.getValue()) {
-                System.out.println(card);
-            }
-        }
-
-        System.out.println();
-        int i = 0;
-        for (Card card : cards) {
-            System.out.println(card);
-            i++;
-        }
-        System.out.println("Кол-во карт " + i);
-    } //fulfilled
+        System.out.print(gameFool);
+    }
 }

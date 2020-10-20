@@ -12,11 +12,14 @@ public enum CardSuit {
         this.sign = sign;
     }
 
-    public static final char[] CARD_SUIT = new char[CardSuit.values().length];
+    public char getSign() {
+        return sign;
+    }
+
+    public static final CardSuit[] CARD_SUIT = new CardSuit[CardSuit.values().length];
 
     static {
         for (int i = 0; i < CardSuit.values().length; i++)
-            CARD_SUIT[i] = CardSuit.values()[i].sign;
+            CARD_SUIT[i] = CardSuit.values()[i];
     }
-
 }

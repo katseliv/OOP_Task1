@@ -3,13 +3,19 @@ package com.company;
 import java.util.*;
 
 public class GameFool {
-    //private ArrayDeque<Player> players = new ArrayDeque<>();
+    private Card trump;
+    public final int NUMBER_OF_CARDS = 6;
+    public final int NUMBER_OF_PLAYERS = 6;
     private CyclicList<Player> players = new CyclicList<>();
     private List<Card> cards = new ArrayList<>();
     private List<Step> steps = new ArrayList<>();
     private Map<Player, Set<Card>> ratio = new HashMap<>();
-
-    public GameFool() {}
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    String ANSI_BLACK = "\u001B[30m";
+    String ANSI_BLUE = "\u001B[34m";
+    public GameFool() {
+    }
 
     public CyclicList<Player> getPlayers() {
         return players;
@@ -43,4 +49,21 @@ public class GameFool {
         this.ratio = ratio;
     }
 
+    public Card getTrump() {
+        return trump;
+    }
+
+    public void setTrump(Card trump) {
+        this.trump = trump;
+    }
+
+    @Override
+    public String toString() {
+        return ANSI_RESET + ANSI_PURPLE + " \nGameFool {"
+                + "\nplayers = in developing"
+                + ",\ncards = " + cards + ANSI_PURPLE
+                + "\nlength = "+ cards.size()
+                + ", steps = " + steps
+                + ", ratio = " + ratio + '}';
+    }
 }
