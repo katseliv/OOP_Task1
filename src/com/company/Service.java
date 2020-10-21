@@ -78,11 +78,12 @@ public class Service {
     }
 
     private void chooseTrump(GameFool gameFool) {
-        List<Card> cards = gameFool.getCards();
         int firstIndex = 0;
+        List<Card> cards = gameFool.getCards();
         gameFool.setTrump(cards.get(firstIndex));
         cards.remove(firstIndex);
         cards.add(cards.size(), gameFool.getTrump());
+
         System.out.println("\nTrump = " + gameFool.getTrump());
         System.out.print(gameFool);
     }
@@ -91,11 +92,13 @@ public class Service {
         CyclicList<Player> players = gameFool.getPlayers();
 
         int i = 0;
-//        while (players.getCount() != 0) {
-//
-//
-//        }
+        while (players.getCount() != 0) {
+
+
+        }
+
     } //final method
+
 
     Card attack(GameFool context, Player attackPlayer, Card trump) {
         Map<Player, Set<Card>> ratio = context.getRatio();
@@ -154,6 +157,7 @@ public class Service {
 
         return cardsForTossUp;
     } //temporary
+
 
     void giveCards(GameFool gameFool) {
         System.out.print("\u001B[34m" + "\nGive cards:" + "\u001B[30m");

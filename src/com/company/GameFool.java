@@ -14,7 +14,9 @@ public class GameFool {
     private static final String ANSI_PURPLE = "\u001B[35m";
     String ANSI_BLACK = "\u001B[30m";
     String ANSI_BLUE = "\u001B[34m";
+
     public GameFool() {
+
     }
 
     public CyclicList<Player> getPlayers() {

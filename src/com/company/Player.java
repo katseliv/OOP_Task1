@@ -5,6 +5,7 @@ public class Player {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
 
     public Player(int id) {
         this.name = id;
