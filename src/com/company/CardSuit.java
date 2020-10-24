@@ -6,7 +6,7 @@ public enum CardSuit {
     SPADES('\u2660'),
     HEARTS('\u2764');
 
-    private char sign;
+    private final char sign;
 
     CardSuit(char sign) {
         this.sign = sign;

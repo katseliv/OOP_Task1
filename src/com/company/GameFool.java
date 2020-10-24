@@ -10,10 +10,6 @@ public class GameFool {
     private List<Card> cards = new ArrayList<>();
     private List<Step> steps = new ArrayList<>();
     private Map<Player, Set<Card>> ratio = new HashMap<>();
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
-    String ANSI_BLACK = "\u001B[30m";
-    String ANSI_BLUE = "\u001B[34m";
 
     public GameFool() {
 
@@ -61,7 +57,10 @@ public class GameFool {
 
     @Override
     public String toString() {
-        return ANSI_RESET + ANSI_PURPLE + " \nGameFool {"
+        final String ANSI_BLACK = "\u001B[30m";
+        final String ANSI_PURPLE = "\u001B[35m";
+
+        return ANSI_BLACK + ANSI_PURPLE + " \nGameFool {"
                 + "\nplayers = in developing"
                 + ",\ncards = " + cards + ANSI_PURPLE
                 + "\nlength = "+ cards.size()

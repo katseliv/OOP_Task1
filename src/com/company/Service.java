@@ -91,11 +91,11 @@ public class Service {
     void playTillTheEnd(GameFool gameFool, int amountOfPlayers) {
         CyclicList<Player> players = gameFool.getPlayers();
 
-        int i = 0;
-        while (players.getCount() != 0) {
-
-
-        }
+//        int i = 0;
+//        while (players.getCount() != 0) {
+//
+//
+//        }
 
     } //final method
 

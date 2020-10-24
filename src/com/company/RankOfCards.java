@@ -48,8 +48,4 @@ public enum RankOfCards {
         return compareNumber;
     }
 
-    @Override
-    public String toString() {
-        return "RankOfCards{" + "number = '" + rank + '\'' + '}';
-    }
 }

@@ -18,4 +18,10 @@ public class Step {
     public LinkedHashMap<Player, HashMap<Card, Card>> getList() {
         return list;
     }
+
+    @Override
+    public String toString() {
+        final String ANSI_BLUE = "\u001B[34m";
+        return ANSI_BLUE + "Step{" + "target=" + target + ", list=" + list + '}';
+    }
 }
