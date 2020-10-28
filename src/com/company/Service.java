@@ -8,7 +8,7 @@ public class Service {
         initialization(gameFool, amountOfPlayers, amountOfCards);
         distributeCards(gameFool);
         chooseTrump(gameFool);
-        //playTillTheEnd(gameFool, amountOfPlayers);
+//        playTillTheEnd(gameFool);
         giveCards(gameFool);
     }
 
@@ -21,12 +21,23 @@ public class Service {
 
     private void initializationPlayers(GameFool gameFool, int amount) {
         CyclicList<Player> players = gameFool.getPlayers();
+        gameFool.setNumberOfPlayers(amount);
         for (int i = 1; i <= amount; i++) {
             players.add(new Player(i));
         }
 
-        for (Player player : players) {
+        printPlayers(players, amount);
+    }
+
+    public void printPlayers(CyclicList<Player> list, int amount) {
+        int counter = 0;
+
+        for (Player player : list) {
             System.out.print(player);
+            counter++;
+            if (counter == amount) {
+                break;
+            }
         }
     }
 
@@ -63,14 +74,21 @@ public class Service {
         List<Card> cards = gameFool.getCards();
         List<Card> toRemove = new ArrayList<>();
 
+        int counter = 0;
         for (Player player : players) {
             Set<Card> cardsOfPlayer = new HashSet<>();
-            for (int i = 0; i < gameFool.NUMBER_OF_PLAYERS; i++) {
+            for (int i = 0; i < gameFool.getNumberOfPlayers(); i++) {
                 cardsOfPlayer.add(cards.get(i));
                 toRemove.add(cards.get(i));
             }
+
             cards.removeAll(toRemove);
             ratio.put(player, cardsOfPlayer);
+            counter++;
+            if (counter == gameFool.getNumberOfPlayers()) {
+                break;
+            }
+
         }
 
         System.out.println();
@@ -88,20 +106,59 @@ public class Service {
         System.out.print(gameFool);
     }
 
-    void playTillTheEnd(GameFool gameFool, int amountOfPlayers) {
+    void playTillTheEnd(GameFool gameFool) {
         CyclicList<Player> players = gameFool.getPlayers();
+        Map<Player, Set<Card>> ratio = gameFool.getRatio();
+        List<Step> steps = gameFool.getSteps();
+        List<Card> onTheTable = new ArrayList<>();
 
-//        int i = 0;
-//        while (players.getCount() != 0) {
+
+        for (Player player : players) {
+            Player playerAttack = player;
+            Card attack = attack(gameFool, playerAttack);
+            onTheTable.add(attack);
+            Player target = players.iterator().next();
+
+            for (Player player1 : players) {
+                if (player1 == target) {
+                    continue;
+                }
+
+            }
+        }
+
+        int i = 0;
+        CyclicList.ListNode head = players.getHead();
+        while (players.getCount() != 0) {
+
+
+//            Step step = new Step(player);
+//            step.getList().put();
+//            steps.add(step);
+            head = head.getNext();
+        }
+
+//        System.out.println();
+//        System.out.print(gameFool.getTrump());
+//        System.out.println();
+//        for (Player player : players) {
 //
+//            Card attackCard = attack(gameFool, player);
+//            System.out.println(
+//                    "Выбор аттакующей карты" + " игрок "
+//                            + player.getName() + " " + attackCard);
 //
 //        }
 
     } //final method
 
+    void printAttack() {
 
-    Card attack(GameFool context, Player attackPlayer, Card trump) {
+    }
+
+    Card attack(GameFool context, Player attackPlayer) {
         Map<Player, Set<Card>> ratio = context.getRatio();
+        Card trump = context.getTrump();
         int minNoTrump = Integer.MAX_VALUE;
         int minTrump = Integer.MAX_VALUE;
         Card cardNoTrump = null, cardTrump = null;
@@ -125,6 +182,10 @@ public class Service {
 
     boolean isTrump(Card card, Card trump) {
         return card.getSuit() == trump.getSuit();
+    }
+
+    void beatOffAllCards(GameFool gameFool, List<Card> noBeatOffCards, Player target) {
+
     }
 
     Card beatOff(Card attackCard, List<Card> remainingCards) {
@@ -166,6 +227,11 @@ public class Service {
 
         for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
             int size = gameFool.NUMBER_OF_CARDS - playerSetEntry.getValue().size();
+
+            if (cards.size() - size < 0) {
+                size = cards.size();
+            }
+
             if (size > 0) {
                 for (int i = 0; i < size; i++) {
                     playerSetEntry.getValue().add(cards.get(0));
@@ -173,6 +239,7 @@ public class Service {
                 }
             }
         }
+
         System.out.print(gameFool);
     }
 }

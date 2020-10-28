@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Step {
-    Player target;
+    Player target; //на кого нападают (цель)
     LinkedHashMap<Player, HashMap<Card, Card>> list = new LinkedHashMap<>();
 
     public Step(Player target) {

@@ -4,8 +4,8 @@ import java.util.*;
 
 public class GameFool {
     private Card trump;
+    private int numberOfPlayers;
     public final int NUMBER_OF_CARDS = 6;
-    public final int NUMBER_OF_PLAYERS = 6;
     private CyclicList<Player> players = new CyclicList<>();
     private List<Card> cards = new ArrayList<>();
     private List<Step> steps = new ArrayList<>();
@@ -53,6 +53,14 @@ public class GameFool {
 
     public void setTrump(Card trump) {
         this.trump = trump;
+    }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    public void setNumberOfPlayers(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
     }
 
     @Override
