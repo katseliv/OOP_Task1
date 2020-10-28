@@ -22,6 +22,6 @@ public class Step {
     @Override
     public String toString() {
         final String ANSI_BLUE = "\u001B[34m";
-        return ANSI_BLUE + "Step{" + "target=" + target + ", list=" + list + '}';
+        return ANSI_BLUE + "Step {" + "\ntarget = " + target + ", \nlist = " + list + '}';
     }
 }

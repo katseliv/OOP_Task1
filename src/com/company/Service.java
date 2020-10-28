@@ -8,8 +8,8 @@ public class Service {
         initialization(gameFool, amountOfPlayers, amountOfCards);
         distributeCards(gameFool);
         chooseTrump(gameFool);
-//        playTillTheEnd(gameFool);
-        giveCards(gameFool);
+        playTillTheEnd(gameFool);
+//        giveCards(gameFool);
     }
 
     public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
@@ -72,17 +72,17 @@ public class Service {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cards = gameFool.getCards();
-        List<Card> toRemove = new ArrayList<>();
+        List<Card> cardsForRemoving = new ArrayList<>();
 
         int counter = 0;
         for (Player player : players) {
             Set<Card> cardsOfPlayer = new HashSet<>();
-            for (int i = 0; i < gameFool.getNumberOfPlayers(); i++) {
+            for (int i = 0; i < gameFool.NUMBER_OF_CARDS; i++) {
                 cardsOfPlayer.add(cards.get(i));
-                toRemove.add(cards.get(i));
+                cardsForRemoving.add(cards.get(i));
             }
 
-            cards.removeAll(toRemove);
+            cards.removeAll(cardsForRemoving);
             ratio.put(player, cardsOfPlayer);
             counter++;
             if (counter == gameFool.getNumberOfPlayers()) {
@@ -103,52 +103,85 @@ public class Service {
         cards.add(cards.size(), gameFool.getTrump());
 
         System.out.println("\nTrump = " + gameFool.getTrump());
-        System.out.print(gameFool);
     }
 
     void playTillTheEnd(GameFool gameFool) {
         CyclicList<Player> players = gameFool.getPlayers();
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
+        List<Card> cardsOnTheTable = new ArrayList<>();
         List<Step> steps = gameFool.getSteps();
-        List<Card> onTheTable = new ArrayList<>();
 
+        System.out.println();
+        System.out.println("\u001B[32m" + "PLAY !!!" + "\u001B[30m");
 
+        boolean isMissTurn = false;
+        int possibilityOfGame = gameFool.getNumberOfPlayers();
+        Player playerTarget;
+        Player playerAttack = null;
         for (Player player : players) {
-            Player playerAttack = player;
-            Card attack = attack(gameFool, playerAttack);
-            onTheTable.add(attack);
-            Player target = players.iterator().next();
-
-            for (Player player1 : players) {
-                if (player1 == target) {
-                    continue;
+            System.out.println("Итерация" + player.getName());
+            if (isMissTurn) {
+                isMissTurn = false;
+                playerAttack = null;
+                possibilityOfGame--;
+                if (possibilityOfGame < 0) {
+                    System.out.print("Игра не возможна!!!");
+                    break;
                 }
-
+                continue;
             }
-        }
 
-        int i = 0;
-        CyclicList.ListNode head = players.getHead();
-        while (players.getCount() != 0) {
+            if (playerAttack == null) {
+                playerAttack = player;
+                System.out.println("\u001B[34m" + "Player attack: " + playerAttack.getName() + "\u001B[30m");
+                continue;
+            }
 
+            playerTarget = player;
+            System.out.println("\u001B[34m" + "Player Target: " + playerTarget.getName() + "\u001B[30m");
 
-//            Step step = new Step(player);
-//            step.getList().put();
-//            steps.add(step);
-            head = head.getNext();
-        }
+            // - старт - //
 
-//        System.out.println();
-//        System.out.print(gameFool.getTrump());
-//        System.out.println();
-//        for (Player player : players) {
+            Card attackCard = attack(gameFool, playerAttack);
+            cardsOnTheTable.add(attackCard);
+            System.out.println("Атакующая карта: " + attackCard + " от Игрока " + playerAttack.getName());
+
+            Card beatOffCard = beatOff(gameFool, attackCard, ratio.get(playerTarget));
+            if (beatOffCard != null) {
+                cardsOnTheTable.add(beatOffCard);
+            } else {
+                ratio.get(playerTarget).addAll(cardsOnTheTable);
+                isMissTurn = true;
+                continue;
+            }
+
+            System.out.println("Отбил: " + beatOffCard + " Игрок " + playerTarget.getName());
+
+            Step step = new Step(playerTarget);
+            HashMap<Card, Card> cardHashMap = new HashMap<>();
+            cardHashMap.put(attackCard, beatOffCard);
+            step.getList().put(playerAttack, cardHashMap);
+            steps.add(step);
+
+            System.out.println(step);
+
+            break;
+
+            //подкидывание
+//            for (Player playerAttack : players) {
+//                if (playerAttack == playerTarget) {
+//                    continue;
+//                }
 //
-//            Card attackCard = attack(gameFool, player);
-//            System.out.println(
-//                    "Выбор аттакующей карты" + " игрок "
-//                            + player.getName() + " " + attackCard);
-//
-//        }
+//                List<Card> cardsForTossUp = tossUp(cardsOnTheTable, ratio.get(playerAttack));
+//                if(cardsForTossUp.size() < 12 - cardsOnTheTable.size()){
+//                    cardsOnTheTable.addAll(cardsForTossUp);
+//                }
+//            }
+
+            //giveCards(gameFool);
+
+        }
 
     } //final method
 
@@ -184,25 +217,39 @@ public class Service {
         return card.getSuit() == trump.getSuit();
     }
 
-    void beatOffAllCards(GameFool gameFool, List<Card> noBeatOffCards, Player target) {
+    void beatOffAllCards(GameFool gameFool, Player target, List<Card> noBeatOffCards) {
 
     }
 
-    Card beatOff(Card attackCard, List<Card> remainingCards) {
-        int min = Integer.MAX_VALUE;
-        Card minCard = null;
+    Card beatOff(GameFool gamefool, Card attackCard, Set<Card> remainingCards) {
+        int minNoTrump = Integer.MAX_VALUE;
+        int minTrump = Integer.MAX_VALUE;
+        Card cardNoTrump = null, cardTrump = null;
 
+        System.out.println("ОТБИВАНИЕ !!! {");
         for (Card card : remainingCards) {
-            if (card.getSuit() == attackCard.getSuit() && card.getRank().getCompareNumber() > attackCard.getRank().getCompareNumber() && card.getRank().getCompareNumber() < min) {
-                min = card.getRank().getCompareNumber();
-                minCard = card;
+            System.out.println(card.getSuit() + " " + attackCard.getSuit());
+            System.out.println(card.getRank().getCompareNumber() + " " + attackCard.getRank().getCompareNumber());
+            System.out.println(card.getRank().getCompareNumber() + " " + minNoTrump);
+            if ((card.getSuit() == attackCard.getSuit()) && (card.getRank().getCompareNumber() > attackCard.getRank().getCompareNumber()) && (card.getRank().getCompareNumber() < minNoTrump)) {
+                minNoTrump = card.getRank().getCompareNumber();
+                cardNoTrump = card;
+            }
+            if (isTrump(card, gamefool.getTrump()) && (card.getRank().getCompareNumber() < minTrump)) {
+                minTrump = card.getRank().getCompareNumber();
+                cardTrump = card;
             }
         }
+        System.out.println("}");
 
-        return minCard;
+        if (cardNoTrump == null) {
+            return cardTrump;
+        }
+
+        return cardNoTrump;
     }  //temporary
 
-    List<Card> tossUp(List<Card> cardsOnTheTable, List<Card> cardsOfPlayer) {
+    List<Card> tossUp(List<Card> cardsOnTheTable, Set<Card> cardsOfPlayer) {
         List<Card> cardsForTossUp = new ArrayList<>();
         List<Card> cardsForRemoving = new ArrayList<>();
 
@@ -224,6 +271,7 @@ public class Service {
         System.out.print("\u001B[34m" + "\nGive cards:" + "\u001B[30m");
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         List<Card> cards = gameFool.getCards();
+        List<Card> cardsRemoving = new ArrayList<>();
 
         for (Map.Entry<Player, Set<Card>> playerSetEntry : ratio.entrySet()) {
             int size = gameFool.NUMBER_OF_CARDS - playerSetEntry.getValue().size();
@@ -234,12 +282,14 @@ public class Service {
 
             if (size > 0) {
                 for (int i = 0; i < size; i++) {
-                    playerSetEntry.getValue().add(cards.get(0));
-                    cards.remove(0);
+                    playerSetEntry.getValue().add(cards.get(i));
+                    cardsRemoving.add(cards.get(i));
                 }
+                cards.removeAll(cardsRemoving);
             }
         }
 
         System.out.print(gameFool);
     }
+
 }
