@@ -125,7 +125,7 @@ public class Service {
                 playerAttack = null;
                 possibilityOfGame--;
                 if (possibilityOfGame < 0) {
-                    System.out.print("Игра не возможна!!!");
+                    System.out.print("\u001B[31m" + "Игра не возможна!!!");
                     break;
                 }
                 continue;
