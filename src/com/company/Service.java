@@ -9,7 +9,6 @@ public class Service {
         distributeCards(gameFool);
         chooseTrump(gameFool);
         playTillTheEnd(gameFool);
-//        giveCards(gameFool);
     }
 
     public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
@@ -114,12 +113,17 @@ public class Service {
         System.out.println();
         System.out.println("\u001B[32m" + "PLAY !!!" + "\u001B[30m");
 
-        boolean isMissTurn = false;
-        int possibilityOfGame = gameFool.getNumberOfPlayers();
         Player playerTarget;
         Player playerAttack = null;
+        boolean isMissTurn = false;
+        int countOfCardsOnTheTable = 6;
+        int possibilityOfGame = gameFool.getNumberOfPlayers() + 1;
+
+        int число = 0;
+
         for (Player player : players) {
-            System.out.println("Итерация" + player.getName());
+
+
             if (isMissTurn) {
                 isMissTurn = false;
                 playerAttack = null;
@@ -133,7 +137,7 @@ public class Service {
 
             if (playerAttack == null) {
                 playerAttack = player;
-                System.out.println("\u001B[34m" + "Player attack: " + playerAttack.getName() + "\u001B[30m");
+                System.out.println("\u001B[34m" + "Player Attack: " + playerAttack.getName() + "\u001B[30m");
                 continue;
             }
 
@@ -141,8 +145,8 @@ public class Service {
             System.out.println("\u001B[34m" + "Player Target: " + playerTarget.getName() + "\u001B[30m");
 
             // - старт - //
-
             Card attackCard = attack(gameFool, playerAttack);
+
             cardsOnTheTable.add(attackCard);
             System.out.println("Атакующая карта: " + attackCard + " от Игрока " + playerAttack.getName());
 
@@ -154,38 +158,44 @@ public class Service {
                 isMissTurn = true;
                 continue;
             }
-
             System.out.println("Отбил: " + beatOffCard + " Игрок " + playerTarget.getName());
+            ratio.get(playerAttack).remove(attackCard);
+            ratio.get(playerTarget).remove(beatOffCard);
 
-            Step step = new Step(playerTarget);
-            HashMap<Card, Card> cardHashMap = new HashMap<>();
-            cardHashMap.put(attackCard, beatOffCard);
-            step.getList().put(playerAttack, cardHashMap);
-            steps.add(step);
-
-            System.out.println(step);
-
-            break;
+//            Step step = new Step(playerTarget);
+//            HashMap<Card, Card> cardHashMap = new HashMap<>();
+//            cardHashMap.put(attackCard, beatOffCard);
+//            step.getList().put(playerAttack, cardHashMap);
+//            steps.add(step);
+//            System.out.println(step);
 
             //подкидывание
-//            for (Player playerAttack : players) {
-//                if (playerAttack == playerTarget) {
-//                    continue;
-//                }
-//
-//                List<Card> cardsForTossUp = tossUp(cardsOnTheTable, ratio.get(playerAttack));
-//                if(cardsForTossUp.size() < 12 - cardsOnTheTable.size()){
-//                    cardsOnTheTable.addAll(cardsForTossUp);
-//                }
-//            }
+            for (Player playerTossUp : players) {
+                if (playerTossUp == playerTarget) {
+                    continue;
+                }
+                List<Card> cardsForTossUp = tossUp(cardsOnTheTable, ratio.get(playerTossUp));
+                List<Card> beatOffCards = beatOffAllCards(gameFool, playerTarget, cardsForTossUp);
 
-            //giveCards(gameFool);
+                if (beatOffCards == null) {
+                    ratio.get(playerTarget).addAll(cardsOnTheTable);
+                    System.out.print("Не отбился от всего(");
+                    isMissTurn = true;
+                    break;
+                }
 
+                if (cardsForTossUp.size() == 0) {
+                    break;
+                }
+            }
+
+            System.out.println();
+            playerAttack = playerTarget;
+            число++;
+            if (число == 6) {
+                break;
+            }
         }
-
-    } //final method
-
-    void printAttack() {
 
     }
 
@@ -211,14 +221,33 @@ public class Service {
         }
 
         return cardNoTrump;
-    } //temporary
+    }
 
     boolean isTrump(Card card, Card trump) {
         return card.getSuit() == trump.getSuit();
     }
 
-    void beatOffAllCards(GameFool gameFool, Player target, List<Card> noBeatOffCards) {
+    List<Card> beatOffAllCards(GameFool gameFool, Player target, List<Card> noBeatOffCards) {
+        Map<Player, Set<Card>> ratio = gameFool.getRatio();
+        List<Card> beatOffCards = new ArrayList<>();
+        List<Card> cardsForRemoving = new ArrayList<>();
 
+        System.out.println("ПОДКИДЫВАНИЕ!!!");
+        for (Card card : noBeatOffCards) {
+            Card cardBeatOff = beatOff(gameFool, card, ratio.get(target));
+
+            if (cardBeatOff == null) {
+                return null;
+            }
+
+            System.out.print("Аттака" + card + "\nОтбил" + cardBeatOff + "\n");
+            cardsForRemoving.add(cardBeatOff);
+            beatOffCards.add(cardBeatOff);
+        }
+
+        ratio.get(target).removeAll(cardsForRemoving);
+
+        return beatOffCards;
     }
 
     Card beatOff(GameFool gamefool, Card attackCard, Set<Card> remainingCards) {
@@ -226,28 +255,29 @@ public class Service {
         int minTrump = Integer.MAX_VALUE;
         Card cardNoTrump = null, cardTrump = null;
 
-        System.out.println("ОТБИВАНИЕ !!! {");
         for (Card card : remainingCards) {
-            System.out.println(card.getSuit() + " " + attackCard.getSuit());
-            System.out.println(card.getRank().getCompareNumber() + " " + attackCard.getRank().getCompareNumber());
-            System.out.println(card.getRank().getCompareNumber() + " " + minNoTrump);
-            if ((card.getSuit() == attackCard.getSuit()) && (card.getRank().getCompareNumber() > attackCard.getRank().getCompareNumber()) && (card.getRank().getCompareNumber() < minNoTrump)) {
+
+            if ((card.getSuit() == attackCard.getSuit())
+                    && (card.getRank().getCompareNumber() < minNoTrump)
+                    && (card.getRank().getCompareNumber() > attackCard.getRank().getCompareNumber())
+                    ) {
                 minNoTrump = card.getRank().getCompareNumber();
                 cardNoTrump = card;
             }
+
             if (isTrump(card, gamefool.getTrump()) && (card.getRank().getCompareNumber() < minTrump)) {
                 minTrump = card.getRank().getCompareNumber();
                 cardTrump = card;
             }
+
         }
-        System.out.println("}");
 
         if (cardNoTrump == null) {
             return cardTrump;
         }
 
         return cardNoTrump;
-    }  //temporary
+    }
 
     List<Card> tossUp(List<Card> cardsOnTheTable, Set<Card> cardsOfPlayer) {
         List<Card> cardsForTossUp = new ArrayList<>();
@@ -264,8 +294,7 @@ public class Service {
         }
 
         return cardsForTossUp;
-    } //temporary
-
+    }
 
     void giveCards(GameFool gameFool) {
         System.out.print("\u001B[34m" + "\nGive cards:" + "\u001B[30m");

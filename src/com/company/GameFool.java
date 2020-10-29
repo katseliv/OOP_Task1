@@ -63,6 +63,10 @@ public class GameFool {
         this.numberOfPlayers = numberOfPlayers;
     }
 
+    public boolean isEnd(){
+        return cards.size() == 0 && numberOfPlayers == 0;
+    }
+
     @Override
     public String toString() {
         final String ANSI_BLACK = "\u001B[30m";
