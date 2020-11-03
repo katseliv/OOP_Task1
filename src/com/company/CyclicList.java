@@ -50,8 +50,32 @@ public class CyclicList<T> implements Iterable<T> {
         count++;
     }
 
-    public void remove(T value){
+    public void remove (T value) {
+        if (head == null)        //если список пуст -
+            return;             //ничего не делаем
 
+        if (head == tail) {     //если список состоит из одного элемента
+            head = null;        //очищаем указатели начала и конца
+            tail = null;
+            return;             //и выходим
+        }
+
+        if (head.value == value) {    //если первый элемент - тот, что нам нужен
+            head = head.next;       //переключаем указатель начала на второй элемент
+            return;                 //и выходим
+        }
+
+        ListNode element = head;       //иначе начинаем искать
+        while (element.next != null) {    //пока следующий элемент существует
+            if (element.next.value == value) {  //проверяем следующий элемент
+                if (tail == element.next) {      //если он последний
+                    tail = element;           //то переключаем указатель на последний элемент на текущий
+                }
+                element.next = element.next.next;   //найденный элемент выкидываем
+                return;                 //и выходим
+            }
+            element = element.next;                //иначе ищем дальше
+        }
     }
 
     public T get() throws Exception {
