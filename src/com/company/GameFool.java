@@ -7,10 +7,12 @@ public class GameFool {
     private Player winPlayer;
     private int numberOfPlayers;
     public final int NUMBER_OF_CARDS = 6;
-    private CyclicList<Player> players = new CyclicList<>();
-    private List<Card> cards = new ArrayList<>();
-    private List<Step> steps = new ArrayList<>();
-    private Map<Player, Set<Card>> ratio = new HashMap<>();
+    public final int NUMBER_CARDS_FOR_TOSS_UP = NUMBER_OF_CARDS - 1;
+    private final CyclicList<Player> players = new CyclicList<>();
+    private final Map<Player, Set<Card>> ratio = new HashMap<>();
+    private final List<Card> cards = new ArrayList<>();
+    private final List<Step> steps = new ArrayList<>();
+    private final List<Integer> winPlayers = new ArrayList<>();
 
     public GameFool() {
 
@@ -20,32 +22,16 @@ public class GameFool {
         return players;
     }
 
-    public void setPlayers(CyclicList<Player> players) {
-        this.players = players;
-    }
-
     public List<Card> getCards() {
         return cards;
-    }
-
-    public void setCards(List<Card> cards) {
-        this.cards = cards;
     }
 
     public List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
-    }
-
     public Map<Player, Set<Card>> getRatio() {
         return ratio;
-    }
-
-    public void setRatio(Map<Player, Set<Card>> ratio) {
-        this.ratio = ratio;
     }
 
     public Card getTrump() {
@@ -70,6 +56,10 @@ public class GameFool {
 
     public void setWinPlayer(Player winPlayer) {
         this.winPlayer = winPlayer;
+    }
+
+    public List<Integer> getWinPlayers() {
+        return winPlayers;
     }
 
     public boolean isEnd(){
