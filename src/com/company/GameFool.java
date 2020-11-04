@@ -4,6 +4,7 @@ import java.util.*;
 
 public class GameFool {
     private Card trump;
+    private Player winPlayer;
     private int numberOfPlayers;
     public final int NUMBER_OF_CARDS = 6;
     private CyclicList<Player> players = new CyclicList<>();
@@ -63,6 +64,14 @@ public class GameFool {
         this.numberOfPlayers = numberOfPlayers;
     }
 
+    public Player getWinPlayer() {
+        return winPlayer;
+    }
+
+    public void setWinPlayer(Player winPlayer) {
+        this.winPlayer = winPlayer;
+    }
+
     public boolean isEnd(){
         return cards.size() == 0 && numberOfPlayers == 0;
     }
@@ -73,7 +82,7 @@ public class GameFool {
         final String ANSI_PURPLE = "\u001B[35m";
 
         return ANSI_BLACK + ANSI_PURPLE + " \nGameFool {"
-                + "\nplayers = in developing"
+                + "\nplayers = " + numberOfPlayers
                 + ",\ncards = " + cards + ANSI_PURPLE
                 + "\nlength = "+ cards.size()
                 + ", steps = " + steps

@@ -109,6 +109,10 @@ public class Service {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         List<Card> cardsOnTheTable = new ArrayList<>();
         List<Step> steps = gameFool.getSteps();
+        Player winPlayer = gameFool.getWinPlayer();
+        List<Integer> winPlayers = new ArrayList<>();
+
+        int numberOfPlayers = gameFool.getNumberOfPlayers();
 
         System.out.println();
         System.out.println("\u001B[32m" + " PLAY !!! " + "\u001B[30m");
@@ -118,12 +122,12 @@ public class Service {
         boolean isMissTurn = false;
         int possibilityOfGame = gameFool.getNumberOfPlayers() + 1;
 
-        int num = 0;
-
         for (Player player : players) {
-            System.out.println("\u001B[32m" + "Итерация " + player.getName() + " " + isMissTurn + "\u001B[30m");
+            if (winPlayers.contains(player.getName())) {
+                continue;
+            }
+
             if (isMissTurn) {
-                System.out.println("\u001B[31m" + "Пропуск хода!!!");
                 isMissTurn = false;
                 playerAttack = null;
                 possibilityOfGame--;
@@ -148,7 +152,7 @@ public class Service {
             cardsOnTheTable.add(attackCard);
             System.out.println("Атака: " + attackCard + " от Игрока " + playerAttack.getName());
 
-            Card beatOffCard = beatOff(gameFool, playerTarget, attackCard);
+            Card beatOffCard = beatOffOneCard(gameFool, playerTarget, attackCard);
             if (beatOffCard != null) {
                 cardsOnTheTable.add(beatOffCard);
             } else {
@@ -159,7 +163,7 @@ public class Service {
             }
             System.out.println("Отбил: " + beatOffCard + " Игрок " + playerTarget.getName());
 
-
+            // - шаги - //
 //            Step step = new Step(playerTarget);
 //            HashMap<Card, Card> cardHashMap = new HashMap<>();
 //            cardHashMap.put(attackCard, beatOffCard);
@@ -168,9 +172,9 @@ public class Service {
 //            System.out.println(step);
 
             // - подкидывание - //
-            int numberForTossup = gameFool.NUMBER_OF_CARDS - 1;
+            int numberCardsForTossUp = gameFool.NUMBER_OF_CARDS - 1;
             int size = 0;
-            int count = 0;
+            int countPlayers = 0;
             for (Player playerTossUp : players) {
                 if (playerTossUp == playerTarget) {
                     continue;
@@ -179,15 +183,16 @@ public class Service {
                 List<Card> cardsForTossUp = tossUp(gameFool, playerTossUp, cardsOnTheTable);
                 size = size + cardsForTossUp.size();
 
+                // - если нечего подкидывать - //
                 if (cardsForTossUp.size() == 0) {
-                    count++;
-                    if (count == gameFool.getNumberOfPlayers() - 1) {
+                    countPlayers++;
+                    if (countPlayers == gameFool.getNumberOfPlayers() - 1) {
                         break;
                     }
                     continue;
                 }
 
-                if (size <= numberForTossup) {
+                if (size <= numberCardsForTossUp) {
                     cardsOnTheTable.addAll(cardsForTossUp);
 
                     List<Card> beatOffCards = beatOffAllCards(gameFool, playerTarget, cardsForTossUp);
@@ -204,30 +209,41 @@ public class Service {
             }
 
             System.out.println();
-            cardsOnTheTable.clear();
+            if (gameFool.getCards().size() != 0) {
+                giveCards(gameFool);
+            }
+
+            if (ratio.get(playerAttack).size() == 0 && winPlayer == null) {
+                winPlayer = playerAttack;
+                gameFool.setWinPlayer(playerAttack);
+                numberOfPlayers--;
+                winPlayers.add(playerAttack.getName());
+                System.out.println("Player " + playerAttack.getName() + " is WINNER!!!");
+            } else if (ratio.get(player).size() == 0) {
+                numberOfPlayers--;
+                winPlayers.add(player.getName());
+            }
+
             if (isMissTurn) {
                 playerAttack = null;
                 isMissTurn = false;
             } else {
                 playerAttack = playerTarget;
             }
+            cardsOnTheTable.clear();
             System.out.println(gameFool);
-            //System.out.println("\u001B[34m" + "Player Attack: " + playerAttack.getName() + "\u001B[30m");
-            num++;
 
-            if (gameFool.getCards().size() != 0) {
-                giveCards(gameFool);
-            }
-
-            if (num == 6) {
+            if (numberOfPlayers == 0 && gameFool.getCards().size() == 0) {
+                System.out.println("Game is over!!!");
+                System.out.println("WINNER is " + gameFool.getWinPlayer());
                 break;
             }
         }
     }
 
-    Card attack(GameFool context, Player attackPlayer) {
-        Set<Card> cards = context.getRatio().get(attackPlayer);
-        Card trump = context.getTrump();
+    Card attack(GameFool gameFool, Player attackPlayer) {
+        Set<Card> cards = gameFool.getRatio().get(attackPlayer);
+        Card trump = gameFool.getTrump();
         int minNoTrump = Integer.MAX_VALUE;
         int minTrump = Integer.MAX_VALUE;
         Card cardNoTrump = null, cardTrump = null;
@@ -251,10 +267,6 @@ public class Service {
         return cardNoTrump;
     }
 
-    boolean isTrump(Card card, Card trump) {
-        return card.getSuit() == trump.getSuit();
-    }
-
     List<Card> beatOffAllCards(GameFool gameFool, Player target, List<Card> noBeatOffCards) {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         List<Card> beatOffCards = new ArrayList<>();
@@ -262,7 +274,7 @@ public class Service {
 
         System.out.println("\u001B[32m" + "Подкидывание!!!" + "\u001B[30m");
         for (Card card : noBeatOffCards) {
-            Card cardBeatOff = beatOff(gameFool, target, card);
+            Card cardBeatOff = beatOffOneCard(gameFool, target, card);
 
             if (cardBeatOff == null) {
                 ratio.get(target).addAll(beatOffCards);
@@ -279,7 +291,7 @@ public class Service {
         return beatOffCards;
     }
 
-    Card beatOff(GameFool gamefool, Player target, Card attackCard) {
+    Card beatOffOneCard(GameFool gamefool, Player target, Card attackCard) {
         Set<Card> remainingCards = gamefool.getRatio().get(target);
         int minNoTrump = Integer.MAX_VALUE;
         int minTrump = Integer.MAX_VALUE;
@@ -309,6 +321,10 @@ public class Service {
 
         remainingCards.remove(cardNoTrump);
         return cardNoTrump;
+    }
+
+    boolean isTrump(Card card, Card trump) {
+        return card.getSuit() == trump.getSuit();
     }
 
     List<Card> tossUp(GameFool gameFool, Player attackPlayer, List<Card> cardsOnTheTable) {
