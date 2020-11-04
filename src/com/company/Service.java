@@ -11,7 +11,7 @@ public class Service {
         playTillTheEnd(gameFool);
     }
 
-    public void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
+    private void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
         System.out.print("\u001B[30m" + "Start our game !!!");
         initializationPlayers(gameFool, amountOfPlayers);
         List<Card> cards = initializationCards(gameFool, amountOfCards);
@@ -28,7 +28,7 @@ public class Service {
         printPlayers(players, amount);
     }
 
-    public void printPlayers(CyclicList<Player> list, int amount) {
+    private void printPlayers(CyclicList<Player> list, int amount) {
         int counter = 0;
 
         for (Player player : list) {
@@ -104,7 +104,7 @@ public class Service {
         System.out.println("\nTrump = " + gameFool.getTrump());
     }
 
-    void playTillTheEnd(GameFool gameFool) {
+    private void playTillTheEnd(GameFool gameFool) {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cardsOnTheTable = new ArrayList<>();
@@ -251,7 +251,7 @@ public class Service {
         }
     }
 
-    void printConditionOfGame(String string) {
+    private void printConditionOfGame(String string) {
         final String BLACK = "\u001B[30m";
         final String RED = "\u001B[31m";
         final String GREEN = "\u001B[32m";
@@ -277,7 +277,7 @@ public class Service {
         System.out.println();
     }
 
-    void printConditionOfPlayers(String string, Player player) {
+    private void printConditionOfPlayers(String string, Player player) {
         final String BLACK = "\u001B[30m";
         final String GREEN = "\u001B[32m";
         final String BLUE = "\u001B[34m";
@@ -298,7 +298,7 @@ public class Service {
         }
     }
 
-    void printProcessOfGame(String string, Player player, Card card) {
+    private void printProcessOfGame(String string, Player player, Card card) {
         switch (string) {
             case "attack":
                 System.out.println("Attack: " + card + " from Player " + player.getName());
@@ -309,7 +309,7 @@ public class Service {
         }
     }
 
-    void addSteps(GameFool gameFool, Player playerAttack, Player playerTarget, Card attackCard, Card beatOffCard) {
+    private void addSteps(GameFool gameFool, Player playerAttack, Player playerTarget, Card attackCard, Card beatOffCard) {
         List<Step> steps = gameFool.getSteps();
         Step step = new Step(playerTarget);
         HashMap<Card, Card> cardHashMap = new HashMap<>();
@@ -319,7 +319,7 @@ public class Service {
         System.out.println(step);
     }
 
-    boolean gameIsImpossible(int number) {
+    private boolean gameIsImpossible(int number) {
         if (number < 0) {
             printConditionOfGame("possibility");
             return true;
@@ -327,7 +327,7 @@ public class Service {
         return false;
     }
 
-    boolean isWinPlayer(GameFool gameFool, Player player) {
+    private boolean isWinPlayer(GameFool gameFool, Player player) {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
 
         if (ratio.get(player).size() == 0 && gameFool.getWinPlayer() == null) {
@@ -346,7 +346,7 @@ public class Service {
         return false;
     }
 
-    boolean isEnd(GameFool gameFool) {
+    private boolean isEnd(GameFool gameFool) {
         if (gameFool.getNumberOfPlayers() == 1 && gameFool.getCards().size() == 0) {
             printConditionOfGame("game is over");
             printConditionOfPlayers("winner", gameFool.getWinPlayer());
@@ -355,7 +355,7 @@ public class Service {
         return false;
     }
 
-    Card attack(GameFool gameFool, Player attackPlayer) {
+    private Card attack(GameFool gameFool, Player attackPlayer) {
         Set<Card> cards = gameFool.getRatio().get(attackPlayer);
         Card trump = gameFool.getTrump();
         int minNoTrump = Integer.MAX_VALUE;
@@ -381,7 +381,7 @@ public class Service {
         return cardNoTrump;
     }
 
-    List<Card> beatOffAllCards(GameFool gameFool, Player target, List<Card> noBeatOffCards) {
+    private List<Card> beatOffAllCards(GameFool gameFool, Player target, List<Card> noBeatOffCards) {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         List<Card> beatOffCards = new ArrayList<>();
         List<Card> cardsForRemoving = new ArrayList<>();
@@ -405,7 +405,7 @@ public class Service {
         return beatOffCards;
     }
 
-    Card beatOffOneCard(GameFool gamefool, Player target, Card attackCard) {
+    private Card beatOffOneCard(GameFool gamefool, Player target, Card attackCard) {
         Set<Card> remainingCards = gamefool.getRatio().get(target);
         int minNoTrump = Integer.MAX_VALUE;
         int minTrump = Integer.MAX_VALUE;
@@ -437,11 +437,11 @@ public class Service {
         return cardNoTrump;
     }
 
-    boolean isTrump(Card card, Card trump) {
+    private boolean isTrump(Card card, Card trump) {
         return card.getSuit() == trump.getSuit();
     }
 
-    List<Card> tossUp(GameFool gameFool, Player attackPlayer, List<Card> cardsOnTheTable) {
+    private List<Card> tossUp(GameFool gameFool, Player attackPlayer, List<Card> cardsOnTheTable) {
         Set<Card> cardsOfPlayer = gameFool.getRatio().get(attackPlayer);
         List<Card> cardsForTossUp = new ArrayList<>();
         List<Card> cardsForRemoving = new ArrayList<>();
@@ -459,7 +459,7 @@ public class Service {
         return cardsForTossUp;
     }
 
-    void giveCards(GameFool gameFool) {
+    private void giveCards(GameFool gameFool) {
         //System.out.print("\u001B[34m" + "\nGive cards:" + "\u001B[30m");
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         List<Card> cards = gameFool.getCards();
