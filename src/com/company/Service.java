@@ -25,19 +25,7 @@ public class Service {
             players.add(new Player(i));
         }
 
-        printPlayers(players, amount);
-    }
-
-    private void printPlayers(CyclicList<Player> list, int amount) {
-        int counter = 0;
-
-        for (Player player : list) {
-            System.out.print(player);
-            counter++;
-            if (counter == amount) {
-                break;
-            }
-        }
+        Printer.printPlayers(players, amount);
     }
 
     private List<Card> initializationCards(GameFool gameFool, int amountOfCards) {
@@ -110,7 +98,7 @@ public class Service {
         List<Card> cardsOnTheTable = new ArrayList<>();
         //int numberOfPlayers = gameFool.getNumberOfPlayers();
 
-        printConditionOfGame("start");
+        Printer.printConditionOfGame("start");
 
         Player playerTarget;
         Player playerAttack = null;
@@ -136,15 +124,15 @@ public class Service {
             // - старт - //
             if (playerAttack == null) {
                 playerAttack = player;
-                printConditionOfPlayers("attack", playerAttack);
+                Printer.printConditionOfPlayers("attack", playerAttack);
                 continue;
             }
 
             playerTarget = player;
-            printConditionOfPlayers("target", playerTarget);
+            Printer.printConditionOfPlayers("target", playerTarget);
 
             Card attackCard = attack(gameFool, playerAttack);
-            printProcessOfGame("attack", playerAttack, attackCard);
+            Printer.printProcessOfGame("attack", playerAttack, attackCard);
 
             cardsOnTheTable.add(attackCard);
 
@@ -154,10 +142,10 @@ public class Service {
             } else {
                 ratio.get(playerTarget).addAll(cardsOnTheTable);
                 isMissTurn = true;
-                printConditionOfGame("no beat off attack cards");
+                Printer.printConditionOfGame("no beat off attack cards");
                 continue;
             }
-            printProcessOfGame("beat off", playerTarget, beatOffCard);
+            Printer.printProcessOfGame("beat off", playerTarget, beatOffCard);
 
             // - подкидывание - //
             int countCardsForTossUp = 0;
@@ -204,7 +192,7 @@ public class Service {
 
                     if (beatOffCards == null) {
                         ratio.get(playerTarget).addAll(cardsOnTheTable);
-                        printConditionOfGame("no beat off");
+                        Printer.printConditionOfGame("no beat off");
                         cardsOnTheTable.clear();
                         isMissTurn = true;
                         break;
@@ -249,64 +237,7 @@ public class Service {
                 break;
             }
         }
-    }
 
-    private void printConditionOfGame(String string) {
-        final String BLACK = "\u001B[30m";
-        final String RED = "\u001B[31m";
-        final String GREEN = "\u001B[32m";
-
-        System.out.println();
-        switch (string) {
-            case "start":
-                System.out.println(GREEN + " PLAY !!! " + BLACK);
-                break;
-            case "possibility":
-                System.out.print(RED + " GAME IS IMPOSSIBLE!!! " + BLACK);
-                break;
-            case "no beat off attack cards":
-                System.out.println(RED + "Player couldn't beat off attack cards" + BLACK);
-                break;
-            case "no beat off":
-                System.out.println(RED + "Player couldn't beat off all cards" + BLACK);
-                break;
-            case "game is over":
-                System.out.println(RED + " GAME IS OVER!!! " + BLACK);
-                break;
-        }
-        System.out.println();
-    }
-
-    private void printConditionOfPlayers(String string, Player player) {
-        final String BLACK = "\u001B[30m";
-        final String GREEN = "\u001B[32m";
-        final String BLUE = "\u001B[34m";
-
-        switch (string) {
-            case "attack":
-                System.out.println(BLUE + "Player Attack: " + player.getName() + BLACK);
-                break;
-            case "target":
-                System.out.println(BLUE + "Player Target: " + player.getName() + BLACK);
-                break;
-            case "winner":
-                System.out.println(GREEN + "Winner is " + player.getName() + BLACK);
-                break;
-            case "post winner":
-                System.out.println(BLUE + "No Fool is " + player.getName() + BLACK);
-                break;
-        }
-    }
-
-    private void printProcessOfGame(String string, Player player, Card card) {
-        switch (string) {
-            case "attack":
-                System.out.println("Attack: " + card + " from Player " + player.getName());
-                break;
-            case "beat off":
-                System.out.println("Beat off: " + card + " Player " + player.getName());
-                break;
-        }
     }
 
     private void addSteps(GameFool gameFool, Player playerAttack, Player playerTarget, Card attackCard, Card beatOffCard) {
@@ -321,7 +252,7 @@ public class Service {
 
     private boolean gameIsImpossible(int number) {
         if (number < 0) {
-            printConditionOfGame("possibility");
+            Printer.printConditionOfGame("possibility");
             return true;
         }
         return false;
@@ -334,12 +265,12 @@ public class Service {
             gameFool.setWinPlayer(player);
             gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
             gameFool.getWinPlayers().add(player.getName());
-            printConditionOfPlayers("winner", player);
+            Printer.printConditionOfPlayers("winner", player);
             return true;
         } else if (ratio.get(player).size() == 0) {
             gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
             gameFool.getWinPlayers().add(player.getName());
-            printConditionOfPlayers("post winner", player);
+            Printer.printConditionOfPlayers("post winner", player);
             return true;
         }
 
@@ -348,8 +279,8 @@ public class Service {
 
     private boolean isEnd(GameFool gameFool) {
         if (gameFool.getNumberOfPlayers() == 1 && gameFool.getCards().size() == 0) {
-            printConditionOfGame("game is over");
-            printConditionOfPlayers("winner", gameFool.getWinPlayer());
+            Printer.printConditionOfGame("game is over");
+            Printer.printConditionOfPlayers("winner", gameFool.getWinPlayer());
             return true;
         }
         return false;
