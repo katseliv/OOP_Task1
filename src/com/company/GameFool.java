@@ -5,6 +5,7 @@ import java.util.*;
 public class GameFool {
     private Card trump;
     private Player winPlayer;
+    private Player foolPlayer;
     private int numberOfPlayers;
     public final int NUMBER_OF_CARDS = 6;
     public final int NUMBER_CARDS_FOR_TOSS_UP = NUMBER_OF_CARDS - 1;
@@ -12,7 +13,7 @@ public class GameFool {
     private final Map<Player, Set<Card>> ratio = new HashMap<>();
     private final List<Card> cards = new ArrayList<>();
     private final List<Step> steps = new ArrayList<>();
-    private final List<Integer> winPlayers = new ArrayList<>();
+    private final Set<Integer> winPlayers = new HashSet<>();
 
     public GameFool() {
 
@@ -58,7 +59,15 @@ public class GameFool {
         this.winPlayer = winPlayer;
     }
 
-    public List<Integer> getWinPlayers() {
+    public Player getFoolPlayer() {
+        return foolPlayer;
+    }
+
+    public void setFoolPlayer(Player foolPlayer) {
+        this.foolPlayer = foolPlayer;
+    }
+
+    public Set<Integer> getWinPlayers() {
         return winPlayers;
     }
 

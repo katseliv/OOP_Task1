@@ -37,7 +37,6 @@ public class Printer {
                 System.out.println(RED + " GAME IS OVER!!! " + BLACK);
                 break;
         }
-        System.out.println();
     }
 
     public static void printConditionOfPlayers(String string, Player player) {
@@ -47,16 +46,19 @@ public class Printer {
 
         switch (string) {
             case "attack":
-                System.out.println(BLUE + "Player Attack: " + player.getName() + BLACK);
+                System.out.println(BLUE + "\nPlayer Attack: " + player.getName() + BLACK);
                 break;
             case "target":
                 System.out.println(BLUE + "Player Target: " + player.getName() + BLACK);
                 break;
             case "winner":
-                System.out.println(GREEN + "Winner is " + player.getName() + BLACK);
+                System.out.println(GREEN + "\nWinner is " + player.getName() + BLACK);
                 break;
             case "post winner":
                 System.out.println(BLUE + "No Fool is " + player.getName() + BLACK);
+                break;
+            case "fool":
+                System.out.println(BLUE + "Fool is " + player.getName() + BLACK);
                 break;
         }
     }
@@ -64,10 +66,10 @@ public class Printer {
     public static void printProcessOfGame(String string, Player player, Card card) {
         switch (string) {
             case "attack":
-                System.out.println("Attack: " + card + " from Player " + player.getName());
+                System.out.println("\nAttack: " + card + " from Player " + player.getName());
                 break;
             case "beat off":
-                System.out.println("Beat off: " + card + " Player " + player.getName());
+                System.out.println("Beat off: " + card + " Player " + player.getName() + "\n");
                 break;
         }
     }

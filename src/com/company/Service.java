@@ -5,6 +5,7 @@ import java.util.*;
 public class Service {
 
     public void start(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
+        //System.out.print("\u001B[30m" + "Start our game !!!");
         initialization(gameFool, amountOfPlayers, amountOfCards);
         distributeCards(gameFool);
         chooseTrump(gameFool);
@@ -12,7 +13,6 @@ public class Service {
     }
 
     private void initialization(GameFool gameFool, int amountOfPlayers, int amountOfCards) {
-        System.out.print("\u001B[30m" + "Start our game !!!");
         initializationPlayers(gameFool, amountOfPlayers);
         List<Card> cards = initializationCards(gameFool, amountOfCards);
         shuffleCards(cards);
@@ -24,8 +24,7 @@ public class Service {
         for (int i = 1; i <= amount; i++) {
             players.add(new Player(i));
         }
-
-        Printer.printPlayers(players, amount);
+        //Printer.printPlayers(players, amount);
     }
 
     private List<Card> initializationCards(GameFool gameFool, int amountOfCards) {
@@ -44,15 +43,14 @@ public class Service {
                 cards.add(new Card(numberOfCard, suit));
             }
         }
-
-//        System.out.println(gameFool);
+        //System.out.println(gameFool);
         return cards;
     }
 
     private void shuffleCards(List<Card> cards) {
         Collections.shuffle(cards);
-//        System.out.println();
-//        System.out.println("\u001B[34m" + "Shuffle cards: " + "\u001B[30m" + cards + "\n length = " + cards.size());
+        //System.out.println();
+        //System.out.println("\u001B[34m" + "Shuffle cards: " + "\u001B[30m" + cards + "\n length = " + cards.size());
     }
 
     private void distributeCards(GameFool gameFool) {
@@ -77,9 +75,7 @@ public class Service {
             }
 
         }
-
-        System.out.println();
-        System.out.println("Распределение карт: " + gameFool);
+        //System.out.println("Распределение карт: " + gameFool);
     }
 
     private void chooseTrump(GameFool gameFool) {
@@ -96,7 +92,6 @@ public class Service {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cardsOnTheTable = new ArrayList<>();
-        //int numberOfPlayers = gameFool.getNumberOfPlayers();
 
         Printer.printConditionOfGame("start");
 
@@ -107,8 +102,12 @@ public class Service {
 
         for (Player player : players) {
             // - игроки, которые закончили играть - //
-            if (gameFool.getWinPlayers().contains(player.getName())) {
+            if (doesPlayerEndGame(gameFool, player)) {
                 continue;
+            }
+
+            if (isEnd(gameFool)) {
+                break;
             }
 
             // - пропуск хода - //
@@ -147,12 +146,20 @@ public class Service {
             }
             Printer.printProcessOfGame("beat off", playerTarget, beatOffCard);
 
+            setConditionOfPlayers(gameFool, playerAttack);
+            setConditionOfPlayers(gameFool, playerTarget);
+
+            if (doesPlayerEndGame(gameFool, playerTarget)) {
+                continue;
+            }
+
             // - подкидывание - //
             int countCardsForTossUp = 0;
             int countNoTossUpPlayers = 0;
             for (Player playerTossUp : players) {
+
                 // - игроки, которые закончили играть - //
-                if (gameFool.getWinPlayers().contains(player.getName())) {
+                if (doesPlayerEndGame(gameFool, playerTossUp)) {
                     continue;
                 }
 
@@ -161,17 +168,10 @@ public class Service {
                     continue;
                 }
 
-                List<Card> cardsForTossUp;
-                if (isWinPlayer(gameFool, playerAttack)) {
-                    System.out.println("is #" + (gameFool.getWinPlayers().size() + 1));
-                    if (isEnd(gameFool)) {
-                        break;
-                    }
-                    continue;
-                } else {
-                    cardsForTossUp = tossUp(gameFool, playerTossUp, cardsOnTheTable);
-                    countCardsForTossUp = countCardsForTossUp + cardsForTossUp.size();
-                }
+                List<Card> cardsForTossUp = tossUp(gameFool, playerTossUp, cardsOnTheTable);
+                countCardsForTossUp = countCardsForTossUp + cardsForTossUp.size();
+
+                setConditionOfPlayers(gameFool, playerTossUp);
 
                 // - если нечего подкидывать - //
                 if (cardsForTossUp.size() == 0) {
@@ -190,6 +190,9 @@ public class Service {
 
                     List<Card> beatOffCards = beatOffAllCards(gameFool, playerTarget, cardsForTossUp);
 
+                    setConditionOfPlayers(gameFool, playerTarget);
+                    setConditionOfPlayers(gameFool, playerTossUp);
+
                     if (beatOffCards == null) {
                         ratio.get(playerTarget).addAll(cardsOnTheTable);
                         Printer.printConditionOfGame("no beat off");
@@ -200,6 +203,10 @@ public class Service {
 
                     cardsOnTheTable.addAll(beatOffCards);
                 }
+
+                if (isEnd(gameFool)) {
+                    break;
+                }
             }
 
             // - раздача карт - //
@@ -207,19 +214,8 @@ public class Service {
                 giveCards(gameFool);
             }
 
-            if (isWinPlayer(gameFool, playerAttack)) {
-                System.out.println("is #" + (gameFool.getWinPlayers().size() + 1));
-            }
-//            if (ratio.get(playerAttack).size() == 0 && winPlayer == null) {
-//                winPlayer = playerAttack;
-//                gameFool.setWinPlayer(playerAttack);
-//                gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
-//                gameFool.getWinPlayers().add(playerAttack.getName());
-//                printConditionOfPlayers("winner", playerAttack);
-//            } else if (ratio.get(player).size() == 0) {
-//                gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
-//                gameFool.getWinPlayers().add(player.getName());
-//            }
+            setConditionOfPlayers(gameFool, playerAttack);
+            setConditionOfPlayers(gameFool, playerTarget);
 
             // - для случая, если игрок не смог отбить подкидывающие карты - //
             if (isMissTurn) {
@@ -250,6 +246,10 @@ public class Service {
         System.out.println(step);
     }
 
+    private boolean doesPlayerEndGame(GameFool gameFool, Player player) {
+        return gameFool.getWinPlayers().contains(player.getName());
+    }
+
     private boolean gameIsImpossible(int number) {
         if (number < 0) {
             Printer.printConditionOfGame("possibility");
@@ -258,7 +258,7 @@ public class Service {
         return false;
     }
 
-    private boolean isWinPlayer(GameFool gameFool, Player player) {
+    private void setConditionOfPlayers(GameFool gameFool, Player player) {
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
 
         if (ratio.get(player).size() == 0 && gameFool.getWinPlayer() == null) {
@@ -266,15 +266,17 @@ public class Service {
             gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
             gameFool.getWinPlayers().add(player.getName());
             Printer.printConditionOfPlayers("winner", player);
-            return true;
-        } else if (ratio.get(player).size() == 0) {
+        } else if (ratio.get(player).size() == 0 && !doesPlayerEndGame(gameFool, player) && gameFool.getWinPlayers().size() != gameFool.getNumberOfPlayers() - 1) {
             gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
             gameFool.getWinPlayers().add(player.getName());
             Printer.printConditionOfPlayers("post winner", player);
-            return true;
+        } else if (ratio.get(player).size() == 0 && gameFool.getWinPlayer() == null && gameFool.getWinPlayers().size() == gameFool.getNumberOfPlayers() - 1) {
+            gameFool.setFoolPlayer(player);
+            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
+            gameFool.getWinPlayers().add(player.getName());
+            Printer.printConditionOfPlayers("fool", player);
         }
 
-        return false;
     }
 
     private boolean isEnd(GameFool gameFool) {
