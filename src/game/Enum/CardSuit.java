@@ -1,4 +1,4 @@
-package com.company;
+package game.Enum;
 
 public enum CardSuit {
     CLUBS('\u2663'),

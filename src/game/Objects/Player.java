@@ -1,4 +1,4 @@
-package com.company;
+package game.Objects;
 
 public class Player {
     private int name;

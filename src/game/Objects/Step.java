@@ -1,4 +1,4 @@
-package com.company;
+package game.Objects;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

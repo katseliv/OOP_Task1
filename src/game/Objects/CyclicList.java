@@ -1,4 +1,4 @@
-package com.company;
+package game.Objects;
 
 import java.util.Iterator;
 
@@ -37,7 +37,7 @@ public class CyclicList<T> implements Iterable<T> {
 
     private ListNode head = null;
     private ListNode tail = null;
-    private int count = 0;
+    private int size = 0;
 
     public void add(T value) {
         if (head == null) {
@@ -47,35 +47,7 @@ public class CyclicList<T> implements Iterable<T> {
             tail = tail.next;
             tail.next = head;
         }
-        count++;
-    }
-
-    public void remove (T value) {
-        if (head == null)        //если список пуст -
-            return;             //ничего не делаем
-
-        if (head == tail) {     //если список состоит из одного элемента
-            head = null;        //очищаем указатели начала и конца
-            tail = null;
-            return;             //и выходим
-        }
-
-        if (head.value == value) {    //если первый элемент - тот, что нам нужен
-            head = head.next;       //переключаем указатель начала на второй элемент
-            return;                 //и выходим
-        }
-
-        ListNode element = head;       //иначе начинаем искать
-        while (element.next != null) {    //пока следующий элемент существует
-            if (element.next.value == value) {  //проверяем следующий элемент
-                if (tail == element.next) {      //если он последний
-                    tail = element;           //то переключаем указатель на последний элемент на текущий
-                }
-                element.next = element.next.next;   //найденный элемент выкидываем
-                return;                 //и выходим
-            }
-            element = element.next;                //иначе ищем дальше
-        }
+        size++;
     }
 
     public T get() throws Exception {
@@ -87,28 +59,40 @@ public class CyclicList<T> implements Iterable<T> {
         if (head == null) {
             tail = null;
         }
-        count--;
+        size--;
         return result;
     }
 
-    public int getCount() {
-        return count;
+    public void remove(T value) {
+        if (head == null)       //если список пуст -
+            return;             //ничего не делаем
+
+        if (head == tail) {     //если список состоит из одного элемента
+            head = null;        //очищаем указатели начала и конца
+            tail = null;
+            return;             //и выходим
+        }
+
+        if (head.value == value) {  //если первый элемент - тот, что нам нужен
+            head = head.next;       //переключаем указатель начала на второй элемент
+            return;                 //и выходим
+        }
+
+        ListNode element = head;                //иначе начинаем искать
+        while (element.next != null) {          //пока следующий элемент существует
+            if (element.next.value == value) {  //проверяем следующий элемент
+                if (tail == element.next) {     //если он последний
+                    tail = element;             //то переключаем указатель на последний элемент на текущий
+                }
+                element.next = element.next.next; //найденный элемент выкидываем
+                return;                           //и выходим
+            }
+            element = element.next;               //иначе ищем дальше
+        }
     }
 
-    public ListNode getHead() {
-        return head;
-    }
-
-    public void setHead(ListNode head) {
-        this.head = head;
-    }
-
-    public ListNode getTail() {
-        return tail;
-    }
-
-    public void setTail(ListNode tail) {
-        this.tail = tail;
+    public int getSize() {
+        return size;
     }
 
     @Override
@@ -130,7 +114,11 @@ public class CyclicList<T> implements Iterable<T> {
                 // 2 вариант: currentCount--;
                 return result;
             }
+
+            @Override
+            public void remove() {
+
+            }
         };
     }
-
 }

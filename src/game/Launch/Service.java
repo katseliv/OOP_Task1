@@ -1,4 +1,14 @@
-package com.company;
+package game.Launch;
+
+import game.Enum.CardSuit;
+import game.Enum.Condition;
+import game.Enum.RankOfCards;
+import game.Objects.GameFool;
+import game.Objects.Card;
+import game.Objects.CyclicList;
+import game.Objects.Player;
+import game.Objects.Step;
+import game.Printer.Printer;
 
 import java.util.*;
 
@@ -89,203 +99,138 @@ public class Service {
     }
 
     private void playTillTheEnd(GameFool gameFool) {
-        Map<Player, Set<Card>> ratio = gameFool.getRatio();
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cardsOnTheTable = new ArrayList<>();
 
         Printer.printConditionOfGame("start");
 
-        Player playerTarget;
-        Player playerAttack = null;
-        boolean isMissTurn = false;
-        int possibilityOfGame = gameFool.getNumberOfPlayers() + 1;
-
         for (Player player : players) {
-            // - игроки, которые закончили играть - //
-            if (doesPlayerEndGame(gameFool, player)) {
+            if (!firstStepInGame(gameFool, player, cardsOnTheTable)) {
                 continue;
             }
+            tossUpInGame(gameFool, cardsOnTheTable);
+            missTurn(gameFool);
 
-            if (isEnd(gameFool)) {
-                break;
-            }
-
-            // - пропуск хода - //
-            if (isMissTurn) {
-                isMissTurn = false;
-                playerAttack = null;
-                if (gameIsImpossible(possibilityOfGame--)) {
-                    break;
-                }
-                continue;
-            }
-
-            // - старт - //
-            if (playerAttack == null) {
-                playerAttack = player;
-                Printer.printConditionOfPlayers("attack", playerAttack);
-                continue;
-            }
-
-            playerTarget = player;
-            Printer.printConditionOfPlayers("target", playerTarget);
-
-            Card attackCard = attack(gameFool, playerAttack);
-            Printer.printProcessOfGame("attack", playerAttack, attackCard);
-
-            cardsOnTheTable.add(attackCard);
-
-            Card beatOffCard = beatOffOneCard(gameFool, playerTarget, attackCard);
-            if (beatOffCard != null) {
-                cardsOnTheTable.add(beatOffCard);
-            } else {
-                ratio.get(playerTarget).addAll(cardsOnTheTable);
-                isMissTurn = true;
-                Printer.printConditionOfGame("no beat off attack cards");
-                continue;
-            }
-            Printer.printProcessOfGame("beat off", playerTarget, beatOffCard);
-
-            setConditionOfPlayers(gameFool, playerAttack);
-            setConditionOfPlayers(gameFool, playerTarget);
-
-            if (doesPlayerEndGame(gameFool, playerTarget)) {
-                continue;
-            }
-
-            // - подкидывание - //
-            int countCardsForTossUp = 0;
-            int countNoTossUpPlayers = 0;
-            for (Player playerTossUp : players) {
-
-                // - игроки, которые закончили играть - //
-                if (doesPlayerEndGame(gameFool, playerTossUp)) {
-                    continue;
-                }
-
-                // - если это игрок, которого атакуют - //
-                if (playerTossUp == playerTarget) {
-                    continue;
-                }
-
-                List<Card> cardsForTossUp = tossUp(gameFool, playerTossUp, cardsOnTheTable);
-                countCardsForTossUp = countCardsForTossUp + cardsForTossUp.size();
-
-                setConditionOfPlayers(gameFool, playerTossUp);
-
-                // - если нечего подкидывать - //
-                if (cardsForTossUp.size() == 0) {
-                    countNoTossUpPlayers++;
-                    if (countNoTossUpPlayers == gameFool.getNumberOfPlayers()) {
-                        break;
-                    }
-                    continue;
-                }
-
-                countNoTossUpPlayers = 0;
-
-                // - можно подкидывать или нет - //
-                if (countCardsForTossUp <= gameFool.NUMBER_CARDS_FOR_TOSS_UP) {
-                    cardsOnTheTable.addAll(cardsForTossUp);
-
-                    List<Card> beatOffCards = beatOffAllCards(gameFool, playerTarget, cardsForTossUp);
-
-                    setConditionOfPlayers(gameFool, playerTarget);
-                    setConditionOfPlayers(gameFool, playerTossUp);
-
-                    if (beatOffCards == null) {
-                        ratio.get(playerTarget).addAll(cardsOnTheTable);
-                        Printer.printConditionOfGame("no beat off");
-                        cardsOnTheTable.clear();
-                        isMissTurn = true;
-                        break;
-                    }
-
-                    cardsOnTheTable.addAll(beatOffCards);
-                }
-
-                if (isEnd(gameFool)) {
-                    break;
-                }
-            }
-
-            // - раздача карт - //
             if (gameFool.getCards().size() != 0) {
                 giveCards(gameFool);
             }
 
-            setConditionOfPlayers(gameFool, playerAttack);
-            setConditionOfPlayers(gameFool, playerTarget);
-
-            // - для случая, если игрок не смог отбить подкидывающие карты - //
-            if (isMissTurn) {
-                playerAttack = null;
-                isMissTurn = false;
-            } else {
-                playerAttack = playerTarget;
-            }
-
-            // - очистка и что получилось в итоге - //
             cardsOnTheTable.clear();
             System.out.println(gameFool);
 
-            if (isEnd(gameFool)) {
+            if (isContinueGame(gameFool, Condition.IMPOSSIBLE_GAME)) { // ?
+                break;
+            }
+
+            if (isContinueGame(gameFool, Condition.END_GAME)) {
                 break;
             }
         }
-
     }
 
-    private void addSteps(GameFool gameFool, Player playerAttack, Player playerTarget, Card attackCard, Card beatOffCard) {
-        List<Step> steps = gameFool.getSteps();
-        Step step = new Step(playerTarget);
-        HashMap<Card, Card> cardHashMap = new HashMap<>();
-        cardHashMap.put(attackCard, beatOffCard);
-        step.getList().put(playerAttack, cardHashMap);
-        steps.add(step);
-        System.out.println(step);
-    }
-
-    private boolean doesPlayerEndGame(GameFool gameFool, Player player) {
-        return gameFool.getWinPlayers().contains(player.getName());
-    }
-
-    private boolean gameIsImpossible(int number) {
-        if (number < 0) {
-            Printer.printConditionOfGame("possibility");
-            return true;
+    private boolean firstStepInGame(GameFool gameFool, Player player, List<Card> cardsOnTheTable) {
+        if (gameFool.getPlayerAttack() == null) {
+            gameFool.setPlayerAttack(player);
+            return false;
         }
-        return false;
+        Printer.printConditionOfPlayers("attack", gameFool.getPlayerAttack());
+
+        gameFool.setPlayerTarget(player);
+        Printer.printConditionOfPlayers("target", gameFool.getPlayerTarget());
+
+        Card attackCard = attack(gameFool, gameFool.getPlayerAttack());
+        Printer.printProcessOfGame("attack", gameFool.getPlayerAttack(), attackCard);
+
+        cardsOnTheTable.add(attackCard);
+
+        Card beatOffCard = beatOffOneCard(gameFool, gameFool.getPlayerTarget(), attackCard);
+        if (beatOffCard != null) {
+            cardsOnTheTable.add(beatOffCard);
+
+            Printer.printProcessOfGame("beat off", gameFool.getPlayerTarget(), beatOffCard);
+        } else {
+            gameFool.getRatio().get(gameFool.getPlayerTarget()).addAll(cardsOnTheTable);
+            gameFool.setMissTurn(true);
+            missTurn(gameFool);
+
+            Printer.printConditionOfGame("no beat off attack cards");
+            return false;
+        }
+
+        return true;
     }
 
-    private void setConditionOfPlayers(GameFool gameFool, Player player) {
+    private void tossUpInGame(GameFool gameFool, List<Card> cardsOnTheTable) {
+        CyclicList<Player> players = gameFool.getPlayers();
         Map<Player, Set<Card>> ratio = gameFool.getRatio();
 
-        if (ratio.get(player).size() == 0 && gameFool.getWinPlayer() == null) {
-            gameFool.setWinPlayer(player);
-            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
-            gameFool.getWinPlayers().add(player.getName());
-            Printer.printConditionOfPlayers("winner", player);
-        } else if (ratio.get(player).size() == 0 && !doesPlayerEndGame(gameFool, player) && gameFool.getWinPlayers().size() != gameFool.getNumberOfPlayers() - 1) {
-            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
-            gameFool.getWinPlayers().add(player.getName());
-            Printer.printConditionOfPlayers("post winner", player);
-        } else if (ratio.get(player).size() == 0 && gameFool.getWinPlayer() == null && gameFool.getWinPlayers().size() == gameFool.getNumberOfPlayers() - 1) {
-            gameFool.setFoolPlayer(player);
-            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
-            gameFool.getWinPlayers().add(player.getName());
-            Printer.printConditionOfPlayers("fool", player);
-        }
+        int countCardsForTossUp = 0;
+        int countNoTossUpPlayers = 0;
+        for (Player playerTossUp : players) {
+            if (playerTossUp == gameFool.getPlayerTarget()) {
+                continue;
+            }
 
+            List<Card> cardsForTossUp = tossUp(gameFool, playerTossUp, cardsOnTheTable);
+            countCardsForTossUp = countCardsForTossUp + cardsForTossUp.size();
+
+            // - если нечего подкидывать - //
+            if (cardsForTossUp.size() == 0) {
+                countNoTossUpPlayers++;
+                if (countNoTossUpPlayers == gameFool.getNumberOfPlayers()) {
+                    break;
+                }
+                continue;
+            }
+
+            countNoTossUpPlayers = 0;
+
+            // - можно подкидывать или нет - //
+            if (countCardsForTossUp <= gameFool.NUMBER_CARDS_FOR_TOSS_UP) {
+                cardsOnTheTable.addAll(cardsForTossUp);
+
+                List<Card> beatOffCards = beatOffAllCards(gameFool, gameFool.getPlayerTarget(), cardsForTossUp);
+
+                if (beatOffCards == null) {
+                    ratio.get(gameFool.getPlayerTarget()).addAll(cardsOnTheTable);
+                    Printer.printConditionOfGame("no beat off");
+
+                    cardsOnTheTable.clear();
+                    gameFool.setMissTurn(true);
+                    break;
+                }
+                cardsOnTheTable.addAll(beatOffCards);
+            }
+
+            if (isContinueGame(gameFool, Condition.END_GAME)) {
+                break;
+            }
+        }
     }
 
-    private boolean isEnd(GameFool gameFool) {
-        if (gameFool.getNumberOfPlayers() == 1 && gameFool.getCards().size() == 0) {
-            Printer.printConditionOfGame("game is over");
-            Printer.printConditionOfPlayers("winner", gameFool.getWinPlayer());
-            return true;
+    private boolean isContinueGame(GameFool gameFool, Condition condition) {
+        switch (condition) {
+            case IMPOSSIBLE_GAME:
+                return false;
+            case END_GAME:
+                if (gameFool.isEnd()) {
+                    return true;
+                }
+                break;
         }
         return false;
+    }
+
+    private void missTurn(GameFool gameFool) {
+        if (gameFool.isMissTurn()) {
+            gameFool.setPlayerAttack(null);
+            gameFool.setMissTurn(false);
+            //if (isImpossibleGame(possibilityOfGame--)) {
+            //    return false;
+            //}
+        } else {
+            gameFool.setPlayerAttack(gameFool.getPlayerTarget());
+        }
     }
 
     private Card attack(GameFool gameFool, Player attackPlayer) {
@@ -414,6 +359,57 @@ public class Service {
             }
         }
         //System.out.print(gameFool);
+    }
+
+    private void addSteps(GameFool gameFool, Player playerAttack, Player playerTarget, Card attackCard, Card beatOffCard) {
+        List<Step> steps = gameFool.getSteps();
+        Step step = new Step(playerTarget);
+        HashMap<Card, Card> cardHashMap = new HashMap<>();
+        cardHashMap.put(attackCard, beatOffCard);
+        step.getList().put(playerAttack, cardHashMap);
+        steps.add(step);
+        System.out.println(step);
+    }
+
+    private boolean isImpossibleGame(int number) {
+        if (number < 0) {
+            Printer.printConditionOfGame("possibility");
+            return true;
+        }
+        return false;
+    }
+
+    private void setConditionOfPlayers(GameFool gameFool, Player player) {
+        Map<Player, Set<Card>> ratio = gameFool.getRatio();
+
+//        if (ratio.get(player).size() == 0 && gameFool.getPlayerWin() == null) {
+//            gameFool.setPlayerWin(player);
+//            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
+//            gameFool.getWinPlayers().add(player.getName());
+//            Printer.printConditionOfPlayers("winner", player);
+//        } else if (ratio.get(player).size() == 0 && !didPlayerEndGame(gameFool, player) && gameFool.getWinPlayers().size() != gameFool.getNumberOfPlayers() - 1) {
+//            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
+//            gameFool.getWinPlayers().add(player.getName());
+//            Printer.printConditionOfPlayers("post winner", player);
+//        } else if (ratio.get(player).size() == 0 && gameFool.getPlayerWin() == null && gameFool.getWinPlayers().size() == gameFool.getNumberOfPlayers() - 1) {
+//            gameFool.setPlayerFool(player);
+//            gameFool.setNumberOfPlayers(gameFool.getNumberOfPlayers() - 1);
+//            gameFool.getWinPlayers().add(player.getName());
+//            Printer.printConditionOfPlayers("fool", player);
+//        }
+
+
+        if (ratio.get(player).size() == 0 && gameFool.getPlayerWin() != null) {
+            gameFool.getPlayers().remove(player);
+            Printer.printConditionOfPlayers("winner", player);
+        } else if (ratio.get(player).size() == 0) {
+            gameFool.getPlayers().remove(player);
+            Printer.printConditionOfPlayers("post winner", player);
+        } else if (ratio.get(player).size() == 0 && gameFool.isEnd()) {
+            gameFool.getPlayers().remove(player);
+            gameFool.setPlayerFool(player);
+            Printer.printConditionOfPlayers("fool", player);
+        }
     }
 
 }

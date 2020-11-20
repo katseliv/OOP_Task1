@@ -1,4 +1,8 @@
-package com.company;
+package game.Printer;
+
+import game.Objects.CyclicList;
+import game.Objects.Card;
+import game.Objects.Player;
 
 public class Printer {
 
@@ -41,7 +45,7 @@ public class Printer {
 
     public static void printConditionOfPlayers(String string, Player player) {
         final String BLACK = "\u001B[30m";
-        final String GREEN = "\u001B[32m";
+        final String RED = "\u001B[31m";
         final String BLUE = "\u001B[34m";
 
         switch (string) {
@@ -51,14 +55,8 @@ public class Printer {
             case "target":
                 System.out.println(BLUE + "Player Target: " + player.getName() + BLACK);
                 break;
-            case "winner":
-                System.out.println(GREEN + "\nWinner is " + player.getName() + BLACK);
-                break;
-            case "post winner":
-                System.out.println(BLUE + "No Fool is " + player.getName() + BLACK);
-                break;
             case "fool":
-                System.out.println(BLUE + "Fool is " + player.getName() + BLACK);
+                System.out.println(RED + "Fool is " + player.getName() + BLACK);
                 break;
         }
     }

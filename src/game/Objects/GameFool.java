@@ -1,11 +1,16 @@
-package com.company;
+package game.Objects;
+
+import game.Printer.Printer;
 
 import java.util.*;
 
 public class GameFool {
     private Card trump;
-    private Player winPlayer;
-    private Player foolPlayer;
+    private boolean isMissTurn = false;
+    private Player playerAttack = null;
+    private Player playerTarget = null;
+    private Player playerWin;
+    private Player playerFool;
     private int numberOfPlayers;
     public final int NUMBER_OF_CARDS = 6;
     public final int NUMBER_CARDS_FOR_TOSS_UP = NUMBER_OF_CARDS - 1;
@@ -13,7 +18,6 @@ public class GameFool {
     private final Map<Player, Set<Card>> ratio = new HashMap<>();
     private final List<Card> cards = new ArrayList<>();
     private final List<Step> steps = new ArrayList<>();
-    private final Set<Integer> winPlayers = new HashSet<>();
 
     public GameFool() {
 
@@ -51,28 +55,53 @@ public class GameFool {
         this.numberOfPlayers = numberOfPlayers;
     }
 
-    public Player getWinPlayer() {
-        return winPlayer;
+    public Player getPlayerAttack() {
+        return playerAttack;
     }
 
-    public void setWinPlayer(Player winPlayer) {
-        this.winPlayer = winPlayer;
+    public void setPlayerAttack(Player playerAttack) {
+        this.playerAttack = playerAttack;
     }
 
-    public Player getFoolPlayer() {
-        return foolPlayer;
+    public Player getPlayerTarget() {
+        return playerTarget;
     }
 
-    public void setFoolPlayer(Player foolPlayer) {
-        this.foolPlayer = foolPlayer;
+    public void setPlayerTarget(Player playerTarget) {
+        this.playerTarget = playerTarget;
     }
 
-    public Set<Integer> getWinPlayers() {
-        return winPlayers;
+    public Player getPlayerWin() {
+        return playerWin;
     }
 
-    public boolean isEnd(){
-        return cards.size() == 0 && numberOfPlayers == 0;
+    public void setPlayerWin(Player playerWin) {
+        this.playerWin = playerWin;
+    }
+
+    public Player getPlayerFool() {
+        return playerFool;
+    }
+
+    public void setPlayerFool(Player playerFool) {
+        this.playerFool = playerFool;
+    }
+
+    public boolean isMissTurn() {
+        return isMissTurn;
+    }
+
+    public void setMissTurn(boolean missTurn) {
+        isMissTurn = missTurn;
+    }
+
+    public boolean isEnd() {
+        if (cards.size() == 0 && numberOfPlayers == 0) {
+            Printer.printConditionOfGame("game is over");
+            Printer.printConditionOfPlayers("fool", playerFool);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -83,7 +112,7 @@ public class GameFool {
         return ANSI_BLACK + ANSI_PURPLE + " \nGameFool {"
                 + "\nplayers = " + numberOfPlayers
                 + ",\ncards = " + cards + ANSI_PURPLE
-                + "\nlength = "+ cards.size()
+                + "\nlength = " + cards.size()
                 + ", steps = " + steps
                 + ", ratio = " + ratio + '}';
     }

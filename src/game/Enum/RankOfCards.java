@@ -1,4 +1,4 @@
-package com.company;
+package game.Enum;
 
 public enum RankOfCards {
     TWO("2", 1),

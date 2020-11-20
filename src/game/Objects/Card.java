@@ -1,4 +1,7 @@
-package com.company;
+package game.Objects;
+
+import game.Enum.CardSuit;
+import game.Enum.RankOfCards;
 
 public class Card {
     private RankOfCards rank;
