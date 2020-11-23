@@ -97,6 +97,8 @@ public class Service {
         System.out.println("\nTrump = " + gameFool.getTrump());
     }
 
+
+
     private void playTillTheEnd(GameFool gameFool) {
         CyclicList<Player> players = gameFool.getPlayers();
         List<Card> cardsOnTheTable = new ArrayList<>();
@@ -105,7 +107,7 @@ public class Service {
 
         for (Player player : players) {
             if (firstStepInGame(gameFool, player, cardsOnTheTable)) {
-                if (isContinueGame(gameFool, player, Condition.END_GAME)) {
+                if (gameFool.isEnd()) {
                     break;
                 }
                 continue;
@@ -123,11 +125,7 @@ public class Service {
             cardsOnTheTable.clear();
             System.out.println(gameFool);
 
-//            if (isContinueGame(gameFool, player, Condition.IMPOSSIBLE_GAME)) { // ?
-//                break;
-//            }
-
-            if (isContinueGame(gameFool, player, Condition.END_GAME)) {
+            if (gameFool.isEnd()) {
                 break;
             }
         }
@@ -157,16 +155,15 @@ public class Service {
             gameFool.getRatio().get(gameFool.getPlayerTarget()).addAll(cardsOnTheTable);
             gameFool.setMissTurn(true);
             missTurn(gameFool);
-
             Printer.printConditionOfGame("no beat off attack cards");
             return true;
         }
 
-        if (Operation.isFinalStepForPlayer(gameFool, gameFool.getPlayerTarget())) {
+        if (gameFool.isEnd()) {
             return true;
         }
 
-        return false;
+        return Operation.isFinalStepForPlayer(gameFool, gameFool.getPlayerTarget());
     }
 
     private int tossUpInGame(GameFool gameFool, List<Card> cardsOnTheTable) {
@@ -211,37 +208,23 @@ public class Service {
                     gameFool.setMissTurn(true);
                     break;
                 }
+
                 cardsOnTheTable.addAll(beatOffCards);
+
             }
 
-            //isFinalStepForPlayer(gameFool, gameFool.getPlayerTarget());
-            if (isContinueGame(gameFool, playerTossUp, Condition.END_GAME)) {
+            if (gameFool.isEnd()) {
                 return -1;
             }
+
         }
         return 1;
-    }
-
-    private boolean isContinueGame(GameFool gameFool, Player player, Condition condition) {
-        switch (condition) {
-            case IMPOSSIBLE_GAME:
-                return false;
-            case END_GAME:
-                if (gameFool.isEnd(player)) {
-                    return true;
-                }
-                break;
-        }
-        return false;
     }
 
     private void missTurn(GameFool gameFool) {
         if (gameFool.isMissTurn()) {
             gameFool.setPlayerAttack(null);
             gameFool.setMissTurn(false);
-            //if (isImpossibleGame(possibilityOfGame--)) {
-            //    return false;
-            //}
         } else {
             gameFool.setPlayerAttack(gameFool.getPlayerTarget());
         }
@@ -254,8 +237,5 @@ public class Service {
         }
         return false;
     }
-
-
-
 
 }

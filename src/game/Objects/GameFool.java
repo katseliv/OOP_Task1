@@ -88,12 +88,16 @@ public class GameFool {
         isMissTurn = missTurn;
     }
 
-    public boolean isEnd(Player player) {
+    public boolean isEnd() {
 
         if (cards.size() == 0 && players.getSize() == 1) {
             Printer.printConditionOfGame("game is over");
-            setPlayerFool(player);
+            for (Player player : players) {
+                setPlayerFool(player);
+                break;
+            }
             Printer.printConditionOfPlayers("fool", playerFool);
+            System.out.println(toString());
             return true;
         }
 

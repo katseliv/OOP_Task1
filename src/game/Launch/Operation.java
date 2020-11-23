@@ -160,7 +160,7 @@ public class Operation {
             gameFool.setPlayerWin(player);
             gameFool.getPlayers().remove(player);
             return true;
-        } else if (ratio.get(player).size() == 0 && gameFool.getCards().size() == 0) {
+        } else if (ratio.get(player).size() == 0 && gameFool.getCards().size() == 0 && gameFool.getPlayers().getSize() != 1) {
             Printer.printConditionOfPlayers("post winner", player);
             gameFool.getPlayers().remove(player);
             return true;
