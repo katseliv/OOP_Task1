@@ -7,12 +7,13 @@ import java.util.*;
 public class GameFool {
     private Card trump;
     private boolean isMissTurn = false;
+
     private Player playerAttack = null;
     private Player playerTarget = null;
-    private Player playerWin;
+    private Player playerWin = null;
     private Player playerFool;
-    private int numberOfPlayers;
-    public final int NUMBER_OF_CARDS = 6;
+
+    public final int NUMBER_OF_CARDS = 3;
     public final int NUMBER_CARDS_FOR_TOSS_UP = NUMBER_OF_CARDS - 1;
     private final CyclicList<Player> players = new CyclicList<>();
     private final Map<Player, Set<Card>> ratio = new HashMap<>();
@@ -45,14 +46,6 @@ public class GameFool {
 
     public void setTrump(Card trump) {
         this.trump = trump;
-    }
-
-    public int getNumberOfPlayers() {
-        return numberOfPlayers;
-    }
-
-    public void setNumberOfPlayers(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
     }
 
     public Player getPlayerAttack() {
@@ -95,25 +88,29 @@ public class GameFool {
         isMissTurn = missTurn;
     }
 
-    public boolean isEnd() {
-        if (cards.size() == 0 && numberOfPlayers == 0) {
+    public boolean isEnd(Player player) {
+
+        if (cards.size() == 0 && players.getSize() == 1) {
             Printer.printConditionOfGame("game is over");
+            setPlayerFool(player);
             Printer.printConditionOfPlayers("fool", playerFool);
             return true;
         }
+
         return false;
     }
 
     @Override
     public String toString() {
-        final String ANSI_BLACK = "\u001B[30m";
-        final String ANSI_PURPLE = "\u001B[35m";
+        final String BLACK = "\u001B[30m";
+        final String PURPLE = "\u001B[35m";
 
-        return ANSI_BLACK + ANSI_PURPLE + " \nGameFool {"
-                + "\nplayers = " + numberOfPlayers
-                + ",\ncards = " + cards + ANSI_PURPLE
+        return BLACK + PURPLE + " \nGameFool {"
+                + "\nplayers = " + players.getSize()
+                + ",\ncards = " + cards + PURPLE
                 + "\nlength = " + cards.size()
                 + ", steps = " + steps
                 + ", ratio = " + ratio + '}';
     }
+
 }

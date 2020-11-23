@@ -46,6 +46,7 @@ public class Printer {
     public static void printConditionOfPlayers(String string, Player player) {
         final String BLACK = "\u001B[30m";
         final String RED = "\u001B[31m";
+        final String GREEN = "\u001B[32m";
         final String BLUE = "\u001B[34m";
 
         switch (string) {
@@ -55,8 +56,14 @@ public class Printer {
             case "target":
                 System.out.println(BLUE + "Player Target: " + player.getName() + BLACK);
                 break;
+            case "winner":
+                System.out.println(GREEN + "\nPlayer Winner: " + player.getName() + BLACK + "\n");
+                break;
+            case "post winner":
+                System.out.println(GREEN + "\nPlayer " + player.getName() + " finished Game" + BLACK + "\n");
+                break;
             case "fool":
-                System.out.println(RED + "Fool is " + player.getName() + BLACK);
+                System.out.println(RED + "Fool is Player " + player.getName() + BLACK + "\n");
                 break;
         }
     }

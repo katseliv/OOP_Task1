@@ -1,7 +1,7 @@
 package game.Objects;
 
 public class Player {
-    private int name;
+    private final int name;
 
     public Player(int name) {
         this.name = name;
@@ -9,10 +9,6 @@ public class Player {
 
     public int getName() {
         return name;
-    }
-
-    public void setName(int name) {
-        this.name = name;
     }
 
     @Override

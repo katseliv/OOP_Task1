@@ -70,11 +70,13 @@ public class CyclicList<T> implements Iterable<T> {
         if (head == tail) {     //если список состоит из одного элемента
             head = null;        //очищаем указатели начала и конца
             tail = null;
+            size--;
             return;             //и выходим
         }
 
         if (head.value == value) {  //если первый элемент - тот, что нам нужен
             head = head.next;       //переключаем указатель начала на второй элемент
+            size--;
             return;                 //и выходим
         }
 
@@ -85,10 +87,12 @@ public class CyclicList<T> implements Iterable<T> {
                     tail = element;             //то переключаем указатель на последний элемент на текущий
                 }
                 element.next = element.next.next; //найденный элемент выкидываем
+                size--;
                 return;                           //и выходим
             }
             element = element.next;               //иначе ищем дальше
         }
+
     }
 
     public int getSize() {
@@ -121,4 +125,5 @@ public class CyclicList<T> implements Iterable<T> {
             }
         };
     }
+
 }
