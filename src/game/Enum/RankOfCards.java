@@ -1,26 +1,24 @@
 package game.Enum;
 
 public enum RankOfCards {
-    TWO("2", 1),
-    THREE("3", 2),
-    FOUR("4", 2),
-    FIVE("5", 3),
-    SIX("6", 4),
-    SEVEN("7", 5),
-    EIGHT("8", 6),
-    NINE("9", 7),
-    TEN("10", 8),
-    JACK("J", 9),
-    DAME("D", 10),
-    KING("K", 11),
-    ACE("A", 12);
+    TWO("2"),
+    THREE("3"),
+    FOUR("4"),
+    FIVE("5"),
+    SIX("6"),
+    SEVEN("7"),
+    EIGHT("8"),
+    NINE("9"),
+    TEN("10"),
+    JACK("J"),
+    DAME("D"),
+    KING("K"),
+    ACE("A");
 
     private final String rank;
-    private final int compareNumber;
 
-    RankOfCards(String number, int compareNumber) {
+    RankOfCards(String number) {
         this.rank = number;
-        this.compareNumber = compareNumber;
     }
 
     private static final int START_POSITION = 4;
@@ -42,10 +40,6 @@ public enum RankOfCards {
 
     public String getRank() {
         return rank;
-    }
-
-    public int getCompareNumber() {
-        return compareNumber;
     }
 
 }

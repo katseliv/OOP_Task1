@@ -162,7 +162,7 @@ public class Service {
             gameFool.getCardsOnTheTable().add(attackCard);
 
             Card beatOffCard = Operation.beatOffOneCard(gameFool, gameFool.getPlayerTarget(), attackCard);
-            //Operation.addSteps(gameFool, gameFool.getPlayerAttack(), gameFool.getPlayerTarget(), attackCard, beatOffCard);
+            Operation.addSteps(gameFool, gameFool.getPlayerAttack(), gameFool.getPlayerTarget(), attackCard, beatOffCard);
             if (beatOffCard != null) {
                 gameFool.getCardsOnTheTable().add(beatOffCard);
                 Printer.printProcessOfGame("beat off", gameFool.getPlayerTarget(), beatOffCard);
@@ -256,6 +256,7 @@ public class Service {
                     System.out.print("\nAttack" + cardForTossUp + " from Player " + attackPlayer.getName());
                     Card cardBeatOff = Operation.beatOffOneCard(gameFool, gameFool.getPlayerTarget(), cardForTossUp);
 
+                    Operation.addSteps(gameFool, attackPlayer, gameFool.getPlayerTarget(), cardForTossUp, cardBeatOff);
                     if (Operation.isFinalStepForPlayer(gameFool, gameFool.getPlayerTarget())) {
                         gameFool.getPlayers().remove(gameFool.getPlayerTarget());
                         gameFool.setPlayerTarget(null);

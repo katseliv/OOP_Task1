@@ -18,11 +18,11 @@ public class Operation {
         Card cardNoTrump = null, cardTrump = null;
 
         for (Card card : cards) {
-            if (card.getRank().getCompareNumber() < minNoTrump && !isTrump(card, trump)) {
-                minNoTrump = card.getRank().getCompareNumber();
+            if (card.getRank().ordinal() < minNoTrump && !isTrump(card, trump)) {
+                minNoTrump = card.getRank().ordinal();
                 cardNoTrump = card;
-            } else if (card.getRank().getCompareNumber() < minTrump) {
-                minTrump = card.getRank().getCompareNumber();
+            } else if (card.getRank().ordinal() < minTrump) {
+                minTrump = card.getRank().ordinal();
                 cardTrump = card;
             }
         }
@@ -76,18 +76,18 @@ public class Operation {
         for (Card card : remainingCards) {
 
             if ((card.getSuit() == attackCard.getSuit())
-                    && (card.getRank().getCompareNumber() < minNoTrump)
-                    && (card.getRank().getCompareNumber() > attackCard.getRank().getCompareNumber())
+                    && (card.getRank().ordinal() < minNoTrump)
+                    && (card.getRank().ordinal() > attackCard.getRank().ordinal())
             ) {
-                minNoTrump = card.getRank().getCompareNumber();
+                minNoTrump = card.getRank().ordinal();
                 cardNoTrump = card;
             }
 
             if (isTrump(card, gamefool.getTrump())
                     && !isTrump(attackCard, gamefool.getTrump())
-                    && (card.getRank().getCompareNumber() < minTrump)
+                    && (card.getRank().ordinal()< minTrump)
             ) {
-                minTrump = card.getRank().getCompareNumber();
+                minTrump = card.getRank().ordinal();
                 cardTrump = card;
             }
 
