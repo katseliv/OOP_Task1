@@ -3,6 +3,6 @@ package game.Enum;
 public enum Condition {
     MISS_TURN,
     NEXT_STEP,
-    IMPOSSIBLE_GAME,
+    TOSS_UP,
     END_GAME
 }

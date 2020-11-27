@@ -5,6 +5,7 @@ import game.Objects.GameFool;
 import game.Objects.Player;
 import game.Objects.Step;
 import game.Printer.Printer;
+
 import java.util.*;
 
 public class Operation {
@@ -40,21 +41,23 @@ public class Operation {
         List<Card> beatOffCards = new ArrayList<>();
         List<Card> cardsForRemoving = new ArrayList<>();
 
-        System.out.println("\u001B[32m" + "Подкидывание!!!" + "\u001B[30m");
+        System.out.println("\u001B[32m" + "\nTOSS UP!!!" + "\u001B[30m");
         for (Card card : noBeatOffCards) {
             Card cardBeatOff = beatOffOneCard(gameFool, target, card);
 
+            System.out.print("\nAttack" + card);
             if (cardBeatOff == null) {
                 ratio.get(target).addAll(beatOffCards);
                 return null;
             }
+            System.out.println("\nBeat Off" + cardBeatOff + "\n");
 
-            System.out.print("Аттака" + card + "\nОтбил" + cardBeatOff + "\n");
             cardsForRemoving.add(cardBeatOff);
             beatOffCards.add(cardBeatOff);
 
             if (isFinalStepForPlayer(gameFool, target)) {
                 ratio.get(target).removeAll(cardsForRemoving);
+                gameFool.getPlayers().remove(target);
                 return beatOffCards;
             }
         }
@@ -80,7 +83,10 @@ public class Operation {
                 cardNoTrump = card;
             }
 
-            if (isTrump(card, gamefool.getTrump()) && (card.getRank().getCompareNumber() < minTrump)) {
+            if (isTrump(card, gamefool.getTrump())
+                    && !isTrump(attackCard, gamefool.getTrump())
+                    && (card.getRank().getCompareNumber() < minTrump)
+            ) {
                 minTrump = card.getRank().getCompareNumber();
                 cardTrump = card;
             }
@@ -100,16 +106,21 @@ public class Operation {
         return card.getSuit() == trump.getSuit();
     }
 
-    public static List<Card> tossUp(GameFool gameFool, Player attackPlayer, List<Card> cardsOnTheTable) {
+    public static List<Card> tossUpCards(GameFool gameFool, Player attackPlayer, List<Card> cardsOnTheTable, int countCardsForTossUp) {
         Set<Card> cardsOfPlayer = gameFool.getRatio().get(attackPlayer);
         List<Card> cardsForTossUp = new ArrayList<>();
         List<Card> cardsForRemoving = new ArrayList<>();
+        int number = countCardsForTossUp;
+        int limit = gameFool.NUMBER_CARDS_FOR_TOSS_UP;
 
         for (Card cardOnTheTable : cardsOnTheTable) {
             for (Card cardForTossUp : cardsOfPlayer) {
                 if (cardOnTheTable.getRank().equals(cardForTossUp.getRank())) {
-                    cardsForTossUp.add(cardForTossUp);
-                    cardsForRemoving.add(cardForTossUp);
+                    if (number <= limit) {
+                        cardsForTossUp.add(cardForTossUp);
+                        cardsForRemoving.add(cardForTossUp);
+                        number++;
+                    }
                 }
             }
             cardsOfPlayer.removeAll(cardsForRemoving);
@@ -158,22 +169,13 @@ public class Operation {
         if (ratio.get(player).size() == 0 && gameFool.getCards().size() == 0 && gameFool.getPlayerWin() == null) {
             Printer.printConditionOfPlayers("winner", player);
             gameFool.setPlayerWin(player);
-            gameFool.getPlayers().remove(player);
             return true;
         } else if (ratio.get(player).size() == 0 && gameFool.getCards().size() == 0 && gameFool.getPlayers().getSize() != 1) {
             Printer.printConditionOfPlayers("post winner", player);
-            gameFool.getPlayers().remove(player);
             return true;
         }
 
         return false;
     }
 
-    private static boolean isAttackPlayer(GameFool gameFool, Player player) {
-        return player.getName() == gameFool.getPlayerAttack().getName();
-    }
-
-    private static boolean isTargetPlayer(GameFool gameFool, Player player) {
-        return player.getName() == gameFool.getPlayerTarget().getName();
-    }
 }

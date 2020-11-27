@@ -14,7 +14,7 @@ public class Main {
 
     public static void removing(){
         CyclicList<Player> players = new CyclicList<>();
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 10; i++) {
             players.add(new Player(i));
         }
 
@@ -22,7 +22,7 @@ public class Main {
         for (Player player : players) {
             System.out.print(player);
             counter++;
-            if (counter == 3) {
+            if (counter == 10) {
                 break;
             }
         }
@@ -36,8 +36,9 @@ public class Main {
                 players.remove(player);
                 System.out.println();
                 System.out.print(" remove " + player);
+                System.out.println();
             }
-            if (counter == 6) {
+            if (counter == 20) {
                 break;
             }
         }

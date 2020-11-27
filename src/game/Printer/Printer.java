@@ -16,6 +16,8 @@ public class Printer {
                 break;
             }
         }
+
+        System.out.println();
     }
 
     public static void printConditionOfGame(String string) {
@@ -26,10 +28,10 @@ public class Printer {
         System.out.println();
         switch (string) {
             case "start":
-                System.out.println(GREEN + " PLAY !!! " + BLACK);
+                System.out.println(GREEN + "    PLAY !!!    " + BLACK);
                 break;
-            case "possibility":
-                System.out.print(RED + " GAME IS IMPOSSIBLE!!! " + BLACK);
+            case "toss up":
+                System.out.println(GREEN + "    TOSS UP!!!    " + BLACK);
                 break;
             case "no beat off attack cards":
                 System.out.println(RED + "Player couldn't beat off attack cards" + BLACK);
@@ -63,7 +65,7 @@ public class Printer {
                 System.out.println(GREEN + "\nPlayer " + player.getName() + " finished Game" + BLACK + "\n");
                 break;
             case "fool":
-                System.out.println(RED + "Fool is Player " + player.getName() + BLACK + "\n");
+                System.out.println(RED + "Fool is Player " + player.getName() + BLACK);
                 break;
         }
     }

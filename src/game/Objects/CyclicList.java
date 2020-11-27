@@ -5,7 +5,7 @@ import java.util.Iterator;
 public class CyclicList<T> implements Iterable<T> {
 
     class ListNode {
-        private T value;
+        private final T value;
         private ListNode next;
 
         ListNode(T value, ListNode next) {
@@ -13,24 +13,12 @@ public class CyclicList<T> implements Iterable<T> {
             this.next = next;
         }
 
-        ListNode() {
-            this(null, null);
-        }
-
         public T getValue() {
             return value;
         }
 
-        public void setValue(T value) {
-            this.value = value;
-        }
-
         public ListNode getNext() {
             return next;
-        }
-
-        public void setNext(ListNode next) {
-            this.next = next;
         }
 
     }
@@ -76,6 +64,7 @@ public class CyclicList<T> implements Iterable<T> {
 
         if (head.value == value) {  //если первый элемент - тот, что нам нужен
             head = head.next;       //переключаем указатель начала на второй элемент
+            tail.next = head;
             size--;
             return;                 //и выходим
         }
@@ -103,26 +92,19 @@ public class CyclicList<T> implements Iterable<T> {
     public Iterator<T> iterator() {
         return new Iterator<T>() {
             private ListNode current = head;
-            // 2 вариант: private int currentCount = count;
 
             @Override
             public boolean hasNext() {
                 return current.getNext() != null;
-                // 2 вариант: currentCount > 0
             }
 
             @Override
             public T next() {
                 T result = current.getValue();
                 current = current.next;
-                // 2 вариант: currentCount--;
                 return result;
             }
 
-            @Override
-            public void remove() {
-
-            }
         };
     }
 

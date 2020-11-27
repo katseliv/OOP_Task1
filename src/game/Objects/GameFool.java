@@ -13,19 +13,20 @@ public class GameFool {
     private Player playerWin = null;
     private Player playerFool;
 
-    public final int NUMBER_OF_CARDS = 3;
+    public final int NUMBER_OF_CARDS = 6;
     public final int NUMBER_CARDS_FOR_TOSS_UP = NUMBER_OF_CARDS - 1;
     private final CyclicList<Player> players = new CyclicList<>();
     private final Map<Player, Set<Card>> ratio = new HashMap<>();
+    private final List<Card> cardsOnTheTable = new ArrayList<>();
     private final List<Card> cards = new ArrayList<>();
     private final List<Step> steps = new ArrayList<>();
 
-    public GameFool() {
-
-    }
-
     public CyclicList<Player> getPlayers() {
         return players;
+    }
+
+    public List<Card> getCardsOnTheTable() {
+        return cardsOnTheTable;
     }
 
     public List<Card> getCards() {
@@ -72,10 +73,6 @@ public class GameFool {
         this.playerWin = playerWin;
     }
 
-    public Player getPlayerFool() {
-        return playerFool;
-    }
-
     public void setPlayerFool(Player playerFool) {
         this.playerFool = playerFool;
     }
@@ -89,7 +86,6 @@ public class GameFool {
     }
 
     public boolean isEnd() {
-
         if (cards.size() == 0 && players.getSize() == 1) {
             Printer.printConditionOfGame("game is over");
             for (Player player : players) {
