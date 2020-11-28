@@ -1,4 +1,4 @@
-package game.Enum;
+package game.enums;
 
 public enum Condition {
     MISS_TURN,

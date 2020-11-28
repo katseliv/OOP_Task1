@@ -1,11 +1,11 @@
-package game.Objects;
+package game.objects;
 
-import game.Enum.CardSuit;
-import game.Enum.RankOfCards;
+import game.enums.CardSuit;
+import game.enums.RankOfCards;
 
 public class Card {
-    private RankOfCards rank;
-    private CardSuit suit;
+    private final RankOfCards rank;
+    private final CardSuit suit;
 
     public Card(RankOfCards id, CardSuit suit) {
         this.rank = id;
@@ -16,16 +16,8 @@ public class Card {
         return rank;
     }
 
-    public void setRank(RankOfCards rank) {
-        this.rank = rank;
-    }
-
     public CardSuit getSuit() {
         return suit;
-    }
-
-    public void setSuit(CardSuit suit) {
-        this.suit = suit;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package game.Objects;
+package game.objects;
 
 import java.util.Iterator;
 

@@ -1,6 +1,6 @@
-package game.Objects;
+package game.objects;
 
-import game.Printer.Printer;
+import game.printer.Printer;
 
 import java.util.*;
 
@@ -10,7 +10,6 @@ public class GameFool {
 
     private Player playerAttack = null;
     private Player playerTarget = null;
-    private Player playerWin = null;
     private Player playerFool;
 
     public final int NUMBER_OF_CARDS = 6;
@@ -63,14 +62,6 @@ public class GameFool {
 
     public void setPlayerTarget(Player playerTarget) {
         this.playerTarget = playerTarget;
-    }
-
-    public Player getPlayerWin() {
-        return playerWin;
-    }
-
-    public void setPlayerWin(Player playerWin) {
-        this.playerWin = playerWin;
     }
 
     public void setPlayerFool(Player playerFool) {

@@ -1,8 +1,8 @@
-package game.Printer;
+package game.printer;
 
-import game.Objects.CyclicList;
-import game.Objects.Card;
-import game.Objects.Player;
+import game.objects.CyclicList;
+import game.objects.Card;
+import game.objects.Player;
 
 public class Printer {
 
@@ -59,9 +59,6 @@ public class Printer {
                 System.out.println(BLUE + "Player Target: " + player.getName() + BLACK);
                 break;
             case "winner":
-                System.out.println(GREEN + "\nPlayer Winner: " + player.getName() + BLACK + "\n");
-                break;
-            case "post winner":
                 System.out.println(GREEN + "\nPlayer " + player.getName() + " finished Game" + BLACK + "\n");
                 break;
             case "fool":

@@ -1,4 +1,4 @@
-package game.Objects;
+package game.objects;
 
 public class Player {
     private final int name;
